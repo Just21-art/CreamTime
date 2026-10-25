@@ -3,64 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>CreamTime - Chapter 1</title>
+    <title>CreamTime</title>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #000; font-family: Arial, sans-serif; touch-action: none; }
-        canvas { display: block; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { overflow: hidden; background-color: #000; font-family: 'Segoe UI', Arial, sans-serif; touch-action: none; }
         
+        /* --- СТИЛИ МЕНЮ --- */
+        #menu {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1a0a0a 0%, #0a0a0a 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; z-index: 100;
+        }
+        #menu h1 {
+            font-size: 52px; color: #ff3333; letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
+            margin-bottom: 5px;
+        }
+        #menu .subtitle { color: #888; font-size: 16px; margin-bottom: 40px; letter-spacing: 2px; }
+        
+        .menu-buttons { display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 300px; }
+        .menu-btn {
+            padding: 15px; font-size: 20px; border: 2px solid #ff3333;
+            background: rgba(255, 51, 51, 0.1); color: white;
+            border-radius: 10px; font-weight: bold; cursor: pointer;
+            transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .menu-btn:active { transform: scale(0.95); background: #ff3333; color: #000; }
+        .menu-btn.secondary { border-color: #444; background: rgba(255,255,255,0.05); color: #aaa; }
+        
+        /* --- СТИЛИ HUD (во время игры) --- */
         #hud {
             position: absolute; top: 20px; left: 20px;
             color: #aaa; pointer-events: none; text-shadow: 1px 1px 2px #000;
-            z-index: 10;
+            z-index: 10; display: none;
         }
 
-        /* --- ВИРТУАЛЬНЫЕ КНОПКИ (СТРЕЛКИ) --- */
+        /* --- ВИРТУАЛЬНЫЕ КНОПКИ --- */
         #joystick {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            width: 150px;
-            height: 150px;
-            z-index: 20;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: 1fr 1fr 1fr;
-            gap: 5px;
+            position: absolute; bottom: 30px; left: 30px;
+            width: 150px; height: 150px;
+            z-index: 20; display: none;
+            grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 5px;
         }
-
         .joy-btn {
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 24px; user-select: none;
-            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 24px; user-select: none; pointer-events: auto;
         }
         .joy-btn:active { background: rgba(255, 255, 255, 0.4); }
-
-        /* Расстановка кнопок в сетке 3x3 */
-        .joy-up    { grid-column: 2; grid-row: 1; }
-        .joy-left  { grid-column: 1; grid-row: 2; }
+        .joy-up { grid-column: 2; grid-row: 1; }
+        .joy-left { grid-column: 1; grid-row: 2; }
         .joy-right { grid-column: 3; grid-row: 2; }
-        .joy-down  { grid-column: 2; grid-row: 3; }
+        .joy-down { grid-column: 2; grid-row: 3; }
 
-        /* --- ЗОНА ДЛЯ ПОВОРОТА КАМЕРЫ --- */
+        /* --- ЗОНА ПОВОРОТА КАМЕРЫ --- */
         #look-zone {
-            position: absolute;
-            top: 0; right: 0;
-            width: 50%; height: 100%;
-            z-index: 15;
+            position: absolute; top: 0; right: 0;
+            width: 50%; height: 100%; z-index: 15; display: none;
         }
     </style>
 </head>
 <body>
 
+    <!-- ГЛАВНОЕ МЕНЮ -->
+    <div id="menu">
+        <h1>CREAMTIME</h1>
+        <div class="subtitle">ЧАСТЬ 1: ЗАБРОШЕННАЯ ФАБРИКА</div>
+        
+        <div class="menu-buttons">
+            <button class="menu-btn" id="startBtn">▶ ИГРАТЬ</button>
+            <button class="menu-btn secondary">⚙ НАСТРОЙКИ</button>
+            <button class="menu-btn secondary">👤 ПЕРСОНАЖ</button>
+        </div>
+    </div>
+
+    <!-- ИГРОВОЙ ИНТЕРФЕЙС -->
     <div id="hud">Глава 1: Заброшенная фабрика</div>
-
-    <!-- Зона для поворота камеры -->
     <div id="look-zone"></div>
-
-    <!-- Виртуальные стрелки -->
     <div id="joystick">
         <div class="joy-btn joy-up"    data-dir="up">▲</div>
         <div class="joy-btn joy-left"  data-dir="left">◀</div>
@@ -68,6 +89,7 @@
         <div class="joy-btn joy-down"  data-dir="down">▼</div>
     </div>
 
+    <!-- Подключение Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
@@ -79,31 +101,30 @@
         // 2. Камера
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 1.6, 5);
-        camera.rotation.order = 'YXZ'; // Важно для правильного поворота
+        camera.rotation.order = 'YXZ';
 
         // 3. Рендерер
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.domElement.style.display = 'none'; // Скрываем 3D до нажатия "Играть"
         document.body.appendChild(renderer.domElement);
 
         // 4. Свет
-        const ambientLight = new THREE.AmbientLight(0x404040);
-        scene.add(ambientLight);
+        scene.add(new THREE.AmbientLight(0x404040));
         const light = new THREE.PointLight(0xffaa00, 1, 20);
         light.position.set(0, 4, 0);
         scene.add(light);
 
-        // 5. Коридор
+        // 5. Создание уровня (коридор)
         const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.8 });
         const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.9 });
 
-        const floorGeo = new THREE.PlaneGeometry(10, 40);
-        const floor = new THREE.Mesh(floorGeo, floorMaterial);
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 40), floorMaterial);
         floor.rotation.x = -Math.PI / 2;
         floor.position.z = -10;
         scene.add(floor);
 
-        const ceiling = new THREE.Mesh(floorGeo, wallMaterial);
+        const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(10, 40), wallMaterial);
         ceiling.rotation.x = Math.PI / 2;
         ceiling.position.y = 5;
         ceiling.position.z = -10;
@@ -124,13 +145,27 @@
         scene.add(backWall);
 
         // 6. Управление
-        const moveSpeed = 4; // Скорость движения
+        const moveSpeed = 4;
         let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
-        
-        // Обработка виртуальных кнопок
+
+        // --- ЗАПУСК ИГРЫ ИЗ МЕНЮ ---
+        document.getElementById('startBtn').addEventListener('click', () => {
+            document.getElementById('menu').style.display = 'none';
+            renderer.domElement.style.display = 'block';
+            document.getElementById('hud').style.display = 'block';
+            document.getElementById('joystick').style.display = 'grid';
+            document.getElementById('look-zone').style.display = 'block';
+            
+            // Запускаем рендер, если он ещё не запущен
+            if (!renderer.isAnimating) {
+                renderer.isAnimating = true;
+                animate();
+            }
+        });
+
+        // --- КНОПКИ УПРАВЛЕНИЯ ---
         document.querySelectorAll('.joy-btn').forEach(btn => {
             const dir = btn.getAttribute('data-dir');
-            
             const startMove = (e) => {
                 e.preventDefault();
                 if (dir === 'up') moveForward = true;
@@ -138,7 +173,6 @@
                 if (dir === 'left') moveLeft = true;
                 if (dir === 'right') moveRight = true;
             };
-            
             const stopMove = (e) => {
                 e.preventDefault();
                 if (dir === 'up') moveForward = false;
@@ -146,7 +180,6 @@
                 if (dir === 'left') moveLeft = false;
                 if (dir === 'right') moveRight = false;
             };
-            
             btn.addEventListener('touchstart', startMove, {passive: false});
             btn.addEventListener('touchend', stopMove, {passive: false});
             btn.addEventListener('touchcancel', stopMove, {passive: false});
@@ -155,11 +188,9 @@
             btn.addEventListener('mouseleave', stopMove);
         });
 
-        // Обработка поворота камеры (свайп по правой части экрана)
+        // --- ПОВОРОТ КАМЕРЫ ---
         const lookZone = document.getElementById('look-zone');
-        let isLooking = false;
-        let lastX = 0;
-        let lastY = 0;
+        let isLooking = false, lastX = 0, lastY = 0;
 
         lookZone.addEventListener('touchstart', (e) => {
             isLooking = true;
@@ -169,26 +200,20 @@
 
         lookZone.addEventListener('touchmove', (e) => {
             if (!isLooking) return;
-            e.preventDefault(); // Останавливаем скролл страницы
-            
+            e.preventDefault();
             const touch = e.touches[0];
             const deltaX = touch.clientX - lastX;
             const deltaY = touch.clientY - lastY;
             
-            // Скорость поворота
             camera.rotation.y -= deltaX * 0.005;
             camera.rotation.x -= deltaY * 0.005;
-            
-            // Ограничение, чтобы не сломать шею (вверх/вниз)
             camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
             
             lastX = touch.clientX;
             lastY = touch.clientY;
         }, {passive: false});
 
-        lookZone.addEventListener('touchend', () => {
-            isLooking = false;
-        });
+        lookZone.addEventListener('touchend', () => { isLooking = false; });
 
         // 7. Анимация
         const clock = new THREE.Clock();
@@ -197,11 +222,9 @@
             requestAnimationFrame(animate);
             const delta = clock.getDelta();
 
-            // Вектор направления, куда смотрит камера
             const direction = new THREE.Vector3();
             camera.getWorldDirection(direction);
 
-            // Движение вперёд/назад (по направлению взгляда)
             if (moveForward) {
                 camera.position.x += direction.x * moveSpeed * delta;
                 camera.position.z += direction.z * moveSpeed * delta;
@@ -211,7 +234,6 @@
                 camera.position.z -= direction.z * moveSpeed * delta;
             }
             
-            // Движение влево/вправо (перпендикулярно взгляду)
             const right = new THREE.Vector3();
             right.crossVectors(camera.up, direction).normalize();
             
@@ -224,14 +246,12 @@
                 camera.position.z += right.z * moveSpeed * delta;
             }
 
-            // Ограничения (чтобы не пройти сквозь стены)
+            // Ограничения стен
             camera.position.x = Math.max(-4.5, Math.min(4.5, camera.position.x));
             camera.position.z = Math.max(-29, Math.min(4, camera.position.z));
 
             renderer.render(scene, camera);
         }
-
-        animate();
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -240,4 +260,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
