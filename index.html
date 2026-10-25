@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>CreamTime - Chapter 1</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: Arial, sans-serif; }
+        canvas { display: block; }
+        
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #aaa;
+            pointer-events: none;
+            text-shadow: 1px 1px 2px #000;
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            text-align: center;
+            color: #fff;
+            font-size: 18px;
+            pointer-events: none;
+            text-shadow: 1px 1px 2px #000;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 0;
+            transition: opacity 1s;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 24px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading">Загрузка 3D...</div>
+    <div id="hud">Глава 1: Заброшенная фабрика</div>
+    <div id="instructions">WASD или стрелки — ходить. Мышка — смотреть.</div>
+
+    <!-- Подключаем библиотеку Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // 1. Создаём сцену
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a); // Тёмный фон
+        scene.fog = new THREE.Fog(0x0a0a0a, 5, 30); // Туман, чтобы было страшно
+
+        // 2. Создаём камеру (наши глаза)
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 1.6, 5); // Рост 1.6 метра
+
+        // 3. Создаём рендерер (то, что рисует картинку)
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 4. Свет (тусклая лампочка сверху)
+        const ambientLight = new THREE.AmbientLight(0x404040); // Общий полумрак
+        scene.add(ambientLight);
+
+        const light = new THREE.PointLight(0xffaa00, 1, 20); // Жёлтая лампа
+        light.position.set(0, 4, 0);
+        scene.add(light);
+
+        // 5. Создаём коридор (стены, пол, потолок)
+        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.8 });
+        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.9 });
+
+        // Пол
+        const floorGeo = new THREE.PlaneGeometry(10, 40);
+        const floor = new THREE.Mesh(floorGeo, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.z = -10;
+        scene.add(floor);
+
+        // Потолок
+        const ceiling = new THREE.Mesh(floorGeo, wallMaterial);
+        ceiling.rotation.x = Math.PI / 2;
+        ceiling.position.y = 5;
+        ceiling.position.z = -10;
+        scene.add(ceiling);
+
+        // Левая стена
+        const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(40, 5), wallMaterial);
+        leftWall.rotation.y = Math.PI / 2;
+        leftWall.position.set(-5, 2.5, -10);
+        scene.add(leftWall);
+
+        // Правая стена
+        const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(40, 5), wallMaterial);
+        rightWall.rotation.y = -Math.PI / 2;
+        rightWall.position.set(5, 2.5, -10);
+        scene.add(rightWall);
+
+        // Задняя стена (тупик)
+        const backWall = new THREE.Mesh(new THREE.PlaneGeometry(10, 5), wallMaterial);
+        backWall.position.set(0, 2.5, -30);
+        scene.add(backWall);
+
+        // 6. Управление
+        const moveSpeed = 0.1;
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let isLocked = false;
+
+        // Блокировка мыши для поворота камеры
+        renderer.domElement.addEventListener('click', () => {
+            renderer.domElement.requestPointerLock();
+            document.getElementById('instructions').style.opacity = '0';
+        });
+
+        document.addEventListener('pointerlockchange', () => {
+            isLocked = document.pointerLockElement === renderer.domElement;
+        });
+
+        document.addEventListener('mousemove', (event) => {
+            if (isLocked) {
+                camera.rotation.y -= event.movementX * 0.002;
+                camera.rotation.x -= event.movementY * 0.002;
+                camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
+            }
+        });
+
+        // Клавиатура
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyW' || e.code === 'ArrowUp') moveForward = true;
+            if (e.code === 'KeyS' || e.code === 'ArrowDown') moveBackward = true;
+            if (e.code === 'KeyA' || e.code === 'ArrowLeft') moveLeft = true;
+            if (e.code === 'KeyD' || e.code === 'ArrowRight') moveRight = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'KeyW' || e.code === 'ArrowUp') moveForward = false;
+            if (e.code === 'KeyS' || e.code === 'ArrowDown') moveBackward = false;
+            if (e.code === 'KeyA' || e.code === 'ArrowLeft') moveLeft = false;
+            if (e.code === 'KeyD' || e.code === 'ArrowRight') moveRight = false;
+        });
+
+        // 7. Анимация (игровой цикл)
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+
+            // Движение вперёд/назад
+            if (moveForward) camera.position.z -= moveSpeed * 60 * delta;
+            if (moveBackward) camera.position.z += moveSpeed * 60 * delta;
+            
+            // Движение влево/вправо
+            if (moveLeft) camera.position.x -= moveSpeed * 60 * delta;
+            if (moveRight) camera.position.x += moveSpeed * 60 * delta;
+
+            // Ограничения, чтобы не выйти за стены
+            camera.position.x = Math.max(-4.5, Math.min(4.5, camera.position.x));
+            camera.position.z = Math.max(-29, Math.min(4, camera.position.z));
+
+            renderer.render(scene, camera);
+        }
+
+        // Убираем загрузку, когда всё готово
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+        }, 500);
+
+        // Запуск
+        animate();
+
+        // Подгонка размера при повороте экрана
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
