@@ -22,14 +22,15 @@
   #hud { position:absolute; top:15px; left:15px; color:#fff; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:18px; font-weight:bold; }
   #task { position:absolute; top:45px; left:15px; color:#ffaa00; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:16px; font-weight:bold; }
   
-  #joy { position:absolute; bottom:30px; left:30px; width:140px; height:140px; z-index:20; display:none; }
+  /* Кнопки подняты выше (bottom: 80px и 90px) */
+  #joy { position:absolute; bottom:80px; left:30px; width:140px; height:140px; z-index:20; display:none; }
   .jbtn { position:absolute; width:45px; height:45px; background:rgba(255,255,255,0.2); border:2px solid #fff; border-radius:8px; color:#fff; font-size:20px; text-align:center; line-height:45px; user-select:none; }
   .jup { left:47px; top:0; } .jdown { left:47px; bottom:0; } .jleft { left:0; top:47px; } .jright { right:0; top:47px; }
   
-  #runBtn { position:absolute; bottom:40px; right:30px; width:80px; height:80px; border-radius:50%; background:rgba(255,51,51,0.4); border:3px solid #ff3333; color:#fff; font-weight:bold; display:none; align-items:center; justify-content:center; z-index:20; }
+  #runBtn { position:absolute; bottom:90px; right:30px; width:80px; height:80px; border-radius:50%; background:rgba(255,51,51,0.4); border:3px solid #ff3333; color:#fff; font-weight:bold; display:none; align-items:center; justify-content:center; z-index:20; }
   #look { position:absolute; top:0; right:0; width:50%; height:100%; z-index:15; display:none; }
   
-  #actBtn { position:absolute; bottom:140px; left:50%; transform:translateX(-50%); padding:15px 30px; background:#ffaa00; color:#000; border:3px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; display:none; z-index:30; }
+  #actBtn { position:absolute; bottom:190px; left:50%; transform:translateX(-50%); padding:15px 30px; background:#ffaa00; color:#000; border:3px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; display:none; z-index:30; }
   
   #modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; align-items:center; justify-content:center; z-index:50; flex-direction:column; }
   .paper { background:#e8d5a5; color:#222; padding:25px; border-radius:5px; max-width:80%; font-family:monospace; font-size:16px; }
@@ -251,4 +252,4 @@
   });
 </script>
 </body>
-    </html>
+</html>
