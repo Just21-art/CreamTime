@@ -7,9 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="hud">Глава 1: Заброшенная фабрика</div>
-    <div id="task">Предохранители: 0/3</div>
-    <button id="pauseBtn">⏸</button>
+    <div id="menu">
+        <h1>CREAMTIME</h1>
+        <p>ЧАСТЬ 1: ЗАБРОШЕННАЯ ФАБРИКА</p>
+        <button id="startBtn">▶ ИГРАТЬ</button>
+        <button id="settingsBtn">⚙ НАСТРОЙКИ</button>
+    </div>
+
+    <div id="hud" style="display:none;">Глава 1: Заброшенная фабрика</div>
+    <div id="task" style="display:none;">Предохранители: 0/3</div>
+    <button id="pauseBtn" style="display:none;">⏸</button>
 
     <div id="look"></div>
     <div id="joy">
@@ -24,13 +31,13 @@
     <div id="modal">
         <div class="paper">
             <h3>ЗАПИСКА</h3>
-            <p>Найди 3 предохранителя...</p>
+            <p>Найди 3 предохранителя, чтобы открыть дверь в конце коридора. Эксперимент 888 уже ждёт тебя...</p>
         </div>
         <button id="closeMod" style="margin-top:20px; padding:10px 20px; background:#f33; color:#fff; border:none; border-radius:5px;">ЗАКРЫТЬ</button>
     </div>
 
     <div id="win">
-        <h1 style="color:#ffaa00; font-size:32px;">ГЛАВА 1 ПРОЙДЕНА!</h1>
+        <h1 style="color:#ffaa00; font-size:32px; margin-bottom:15px;">ГЛАВА 1 ПРОЙДЕНА!</h1>
         <button onclick="location.reload()" style="padding:12px 30px; background:#ffaa00; border:none; font-weight:bold; border-radius:10px; font-size:18px;">В МЕНЮ</button>
     </div>
 
