@@ -2,13 +2,23 @@
 body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
 canvas { display:block; }
 
+#menu {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:linear-gradient(135deg, #1a0a0a 0%, #0a0a0a 100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:white; z-index:100;
+}
+#menu h1 { font-size:52px; color:#ff3333; letter-spacing:4px; text-shadow:0 0 20px rgba(255,51,51,0.6); margin-bottom:5px; }
+#menu p { color:#888; font-size:16px; margin-bottom:40px; letter-spacing:2px; }
+#menu button { padding:15px; font-size:20px; border:2px solid #ff3333; background:rgba(255,51,51,0.1); color:white; border-radius:10px; font-weight:bold; cursor:pointer; width:80%; max-width:300px; margin-bottom:15px; }
+#menu button:active { transform:scale(0.95); background:#ff3333; color:#000; }
+
 #hud { position:absolute; top:15px; left:15px; color:#fff; z-index:10; text-shadow:1px 1px 3px #000; font-size:18px; font-weight:bold; }
 #task { position:absolute; top:45px; left:15px; color:#ffaa00; z-index:10; text-shadow:1px 1px 3px #000; font-size:16px; font-weight:bold; }
 
 #pauseBtn { position:absolute; top:15px; right:15px; padding:10px 15px; background:rgba(255,170,0,0.8); border:2px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; z-index:30; cursor:pointer; }
-#pauseBtn:active { transform:scale(0.95); }
 
-#joy { position:absolute; bottom:80px; left:30px; width:140px; height:140px; z-index:20; }
+#joy { position:absolute; bottom:80px; left:30px; width:140px; height:140px; z-index:20; display:block; }
 .jbtn { position:absolute; width:45px; height:45px; background:rgba(255,255,255,0.2); border:2px solid #fff; border-radius:8px; color:#fff; font-size:20px; text-align:center; line-height:45px; user-select:none; }
 .jup { left:47px; top:0; } .jdown { left:47px; bottom:0; } .jleft { left:0; top:47px; } .jright { right:0; top:47px; }
 
