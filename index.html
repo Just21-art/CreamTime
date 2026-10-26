@@ -36,7 +36,6 @@
 
         #look-zone { position: absolute; top: 0; right: 0; width: 50%; height: 100%; z-index: 15; display: none; }
 
-        /* --- ИНТЕРФЕЙС ВЗАИМОДЕЙСТВИЯ --- */
         #actionBtn {
             position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%);
             padding: 15px 30px; background: #ffaa00; color: #000;
@@ -79,10 +78,8 @@
     </div>
     <div id="runBtn">БЕГ</div>
 
-    <!-- Кнопка действия (прочитать записку) -->
-    <button id="actionBtn">📜 ПРОЧИТАТЬ</button>
+    <button id="actionBtn">ВЗАИМОДЕЙСТВОВАТЬ</button>
 
-    <!-- Модальное окно с запиской -->
     <div id="noteModal">
         <div class="note-paper">
             <h3>ЗАПИСКА ОТ НЕИЗВЕСТНОГО</h3>
@@ -95,11 +92,12 @@
 
     <script>
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x1a1a1a);
-        scene.fog = new THREE.Fog(0x1a1a1a, 10, 35);
+        // Светло-синее небо, как ты просил
+        scene.background = new THREE.Color(0x87CEEB); 
+        scene.fog = new THREE.Fog(0x87CEEB, 10, 50);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 1.6, 5);
+        camera.position.set(0, 1.6, 10); // Начинаем снаружи
         camera.rotation.order = 'YXZ';
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -107,88 +105,110 @@
         renderer.domElement.style.display = 'none';
         document.body.appendChild(renderer.domElement);
 
-        scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-        const light1 = new THREE.PointLight(0xffaa00, 1.5, 30);
-        light1.position.set(0, 4, 0); scene.add(light1);
-        const light2 = new THREE.PointLight(0xffaa00, 1.2, 30);
-        light2.position.set(0, 4, -15); scene.add(light2);
-        const light3 = new THREE.PointLight(0xffaa00, 1.0, 30);
-        light3.position.set(0, 4, -25); scene.add(light3);
+        // --- СВЕТ ---
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1);
+        sunLight.position.set(10, 20, 10);
+        scene.add(sunLight);
 
+        // --- УЛИЦА ---
+        // Трава
+        const grassMat = new THREE.MeshStandardMaterial({ color: 0x4CAF50 });
+        const grass = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), grassMat);
+        grass.rotation.x = -Math.PI / 2;
+        grass.position.y = -0.1;
+        scene.add(grass);
+
+        // Дорога
+        const roadMat = new THREE.MeshStandardMaterial({ color: 0x555555 });
+        const road = new THREE.Mesh(new THREE.PlaneGeometry(6, 100), roadMat);
+        road.rotation.x = -Math.PI / 2;
+        road.position.y = 0;
+        scene.add(road);
+
+        // --- ФАБРИКА (Здание) ---
+        const factoryMat = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+        const factory = new THREE.Mesh(new THREE.BoxGeometry(12, 8, 10), factoryMat);
+        factory.position.set(0, 4, -5);
+        scene.add(factory);
+
+        // Дверь на фабрике
+        const doorMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+        const door = new THREE.Mesh(new THREE.BoxGeometry(2, 4, 0.2), doorMat);
+        door.position.set(0, 2, 0.1);
+        scene.add(door);
+
+        // --- ВНУТРЕННИЙ КОРИДОР (внутри фабрики) ---
         const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.8 });
         const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.9 });
 
         const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 40), floorMaterial);
-        floor.rotation.x = -Math.PI / 2; floor.position.z = -10; scene.add(floor);
+        floor.rotation.x = -Math.PI / 2; floor.position.z = -20; floor.position.y = 0.01; scene.add(floor);
 
         const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(10, 40), wallMaterial);
-        ceiling.rotation.x = Math.PI / 2; ceiling.position.y = 5; ceiling.position.z = -10; scene.add(ceiling);
+        ceiling.rotation.x = Math.PI / 2; ceiling.position.y = 5; ceiling.position.z = -20; scene.add(ceiling);
 
         const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(40, 5), wallMaterial);
-        leftWall.rotation.y = Math.PI / 2; leftWall.position.set(-5, 2.5, -10); scene.add(leftWall);
+        leftWall.rotation.y = Math.PI / 2; leftWall.position.set(-5, 2.5, -20); scene.add(leftWall);
 
         const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(40, 5), wallMaterial);
-        rightWall.rotation.y = -Math.PI / 2; rightWall.position.set(5, 2.5, -10); scene.add(rightWall);
+        rightWall.rotation.y = -Math.PI / 2; rightWall.position.set(5, 2.5, -20); scene.add(rightWall);
 
         const backWall = new THREE.Mesh(new THREE.PlaneGeometry(10, 5), wallMaterial);
-        backWall.position.set(0, 2.5, -30); scene.add(backWall);
+        backWall.position.set(0, 2.5, -40); scene.add(backWall);
 
-        // --- СТОЛ С ЗАПИСКОЙ ---
-        const tableMat = new THREE.MeshStandardMaterial({ color: 0x5c3a21 });
-        const tableTop = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 1), tableMat);
-        tableTop.position.set(-2, 1.0, -5); scene.add(tableTop);
-        const tableLeg1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), tableMat);
-        tableLeg1.position.set(-2.8, 0.5, -4.6); scene.add(tableLeg1);
-        const tableLeg2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), tableMat);
-        tableLeg2.position.set(-1.2, 0.5, -4.6); scene.add(tableLeg2);
-        const tableLeg3 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), tableMat);
-        tableLeg3.position.set(-2.8, 0.5, -5.4); scene.add(tableLeg3);
-        const tableLeg4 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), tableMat);
-        tableLeg4.position.set(-1.2, 0.5, -5.4); scene.add(tableLeg4);
+        // Внутренние лампы
+        const light1 = new THREE.PointLight(0xffaa00, 1.5, 30);
+        light1.position.set(0, 4, -10); scene.add(light1);
+        const light2 = new THREE.PointLight(0xffaa00, 1.2, 30);
+        light2.position.set(0, 4, -25); scene.add(light2);
 
+        // --- ДЕТАЛИ (Ящики, стол) ---
+        const boxMat = new THREE.MeshStandardMaterial({ color: 0x5c3a21 });
+        const crate1 = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), boxMat);
+        crate1.position.set(-3, 0.5, -15); scene.add(crate1);
+        const crate2 = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.5), boxMat);
+        crate2.position.set(3, 0.75, -20); scene.add(crate2);
+
+        // Стол
+        const tableTop = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 1), boxMat);
+        tableTop.position.set(-2, 1.0, -25); scene.add(tableTop);
+
+        // Записка
         const noteMat = new THREE.MeshStandardMaterial({ color: 0xffff99, emissive: 0x333300 });
         const noteMesh = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.02, 0.3), noteMat);
-        noteMesh.position.set(-2, 1.06, -5); scene.add(noteMesh);
+        noteMesh.position.set(-2, 1.06, -25); scene.add(noteMesh);
 
-        // --- МОРОЖЕНОСЧИК (Эксперимент 888) ---
+        // --- ЗАКРЫТАЯ ДВЕРЬ В КОНЦЕ ---
+        const endDoorMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+        const endDoor = new THREE.Mesh(new THREE.BoxGeometry(2, 4, 0.2), endDoorMat);
+        endDoor.position.set(0, 2, -39.8);
+        scene.add(endDoor);
+        let endDoorOpen = false;
+
+        // --- МОРОЖЕНОСЧИК (Внутри, за дверью) ---
         const monsterGroup = new THREE.Group();
-        
-        // Тело (белое)
         const bodyMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee });
         const body = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), bodyMat);
         body.position.y = 1; monsterGroup.add(body);
-
-        // Голова (розовая)
         const headMat = new THREE.MeshStandardMaterial({ color: 0xff9999 });
         const head = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1, 1.2), headMat);
         head.position.y = 2.5; monsterGroup.add(head);
-
-        // Глаза (черные)
         const eyeMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
         const eye1 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.1), eyeMat);
         eye1.position.set(-0.3, 2.6, 0.61); monsterGroup.add(eye1);
         const eye2 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.1), eyeMat);
         eye2.position.set(0.3, 2.6, 0.61); monsterGroup.add(eye2);
-
-        // Рот (черный)
-        const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.1, 0.1), eyeMat);
-        mouth.position.set(0, 2.3, 0.61); monsterGroup.add(mouth);
-
-        // Рожок мороженого (коричневый)
-        const coneMat = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
-        const cone = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1, 8), coneMat);
-        cone.position.set(0, -0.5, 0); cone.rotation.x = Math.PI; monsterGroup.add(cone);
-
-        monsterGroup.position.set(0, 0, -25); // Стоит в конце коридора
-        monsterGroup.visible = false; // Пока скрыт, появится после записки
+        monsterGroup.position.set(0, 0, -38); // За дверью
         scene.add(monsterGroup);
 
-        // --- ЛОГИКА ИГРЫ ---
+        // --- ЛОГИКА ---
         let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
         let isRunning = false;
         const walkSpeed = 3;
         const runSpeed = 6;
         
+        let playerInside = false;
         let noteRead = false;
         let monsterActive = false;
 
@@ -202,7 +222,6 @@
             if (!renderer.isAnimating) { renderer.isAnimating = true; animate(); }
         });
 
-        // Управление (стрелки)
         document.querySelectorAll('.joy-btn').forEach(btn => {
             const dir = btn.getAttribute('data-dir');
             const startMove = (e) => {
@@ -224,12 +243,10 @@
             btn.addEventListener('touchcancel', stopMove, {passive: false});
         });
 
-        // Бег
         const runBtn = document.getElementById('runBtn');
         runBtn.addEventListener('touchstart', (e) => { e.preventDefault(); isRunning = true; runBtn.style.background = 'rgba(255, 51, 51, 0.8)'; }, {passive: false});
         runBtn.addEventListener('touchend', (e) => { e.preventDefault(); isRunning = false; runBtn.style.background = 'rgba(255, 51, 51, 0.3)'; }, {passive: false});
 
-        // Камера
         const lookZone = document.getElementById('look-zone');
         let isLooking = false, lastX = 0, lastY = 0;
         lookZone.addEventListener('touchstart', (e) => { isLooking = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; }, {passive: false});
@@ -244,20 +261,32 @@
         }, {passive: false});
         lookZone.addEventListener('touchend', () => { isLooking = false; });
 
-        // Взаимодействие с запиской
         const actionBtn = document.getElementById('actionBtn');
         const noteModal = document.getElementById('noteModal');
         const closeNote = document.getElementById('closeNote');
 
         actionBtn.addEventListener('click', () => {
-            noteModal.style.display = 'flex';
-            actionBtn.style.display = 'none';
-            noteRead = true;
-            // Активируем монстра
-            setTimeout(() => {
-                monsterGroup.visible = true;
+            // Если стоим у двери снаружи
+            if (!playerInside && camera.position.z > 2) {
+                playerInside = true;
+                actionBtn.style.display = 'none';
+                // Телепорт внутрь
+                camera.position.set(0, 1.6, -2);
+                document.getElementById('hud').innerText = "Глава 1: Внутри фабрики";
+            } 
+            // Если стоим у записки
+            else if (playerInside && !noteRead) {
+                noteModal.style.display = 'flex';
+                actionBtn.style.display = 'none';
+                noteRead = true;
+            }
+            // Если стоим у двери в конце
+            else if (playerInside && noteRead && !endDoorOpen && camera.position.z < -36) {
+                endDoorOpen = true;
+                endDoor.position.z = -39.9; // Дверь исчезает (открывается)
                 monsterActive = true;
-            }, 1000);
+                actionBtn.style.display = 'none';
+            }
         });
 
         closeNote.addEventListener('click', () => {
@@ -295,35 +324,44 @@
                 camera.position.z += right.z * currentSpeed * delta;
             }
 
-            camera.position.x = Math.max(-4.5, Math.min(4.5, camera.position.x));
-            camera.position.z = Math.max(-29, Math.min(4, camera.position.z));
-
-            // Проверка близости к записке (координаты стола: x=-2, z=-5)
-            if (!noteRead) {
-                const distToNote = Math.sqrt(Math.pow(camera.position.x - (-2), 2) + Math.pow(camera.position.z - (-5), 2));
-                if (distToNote < 2.5) {
-                    actionBtn.style.display = 'block';
-                } else {
-                    actionBtn.style.display = 'none';
-                }
+            // ОГРАНИЧЕНИЯ
+            if (!playerInside) {
+                // Снаружи
+                camera.position.x = Math.max(-4, Math.min(4, camera.position.x));
+                camera.position.z = Math.max(1, Math.min(15, camera.position.z));
+            } else {
+                // Внутри
+                camera.position.x = Math.max(-4.5, Math.min(4.5, camera.position.x));
+                camera.position.z = Math.max(-39, Math.min(-1, camera.position.z));
             }
 
-            // Движение монстра (если активен)
+            // Кнопки действий
+            if (!playerInside && camera.position.z < 3) {
+                actionBtn.innerText = "🚪 ВОЙТИ";
+                actionBtn.style.display = 'block';
+            } else if (playerInside && !noteRead && Math.sqrt(Math.pow(camera.position.x - (-2), 2) + Math.pow(camera.position.z - (-25), 2)) < 2) {
+                actionBtn.innerText = "📜 ПРОЧИТАТЬ";
+                actionBtn.style.display = 'block';
+            } else if (playerInside && noteRead && !endDoorOpen && camera.position.z < -35) {
+                actionBtn.innerText = "🔓 ОТКРЫТЬ ДВЕРЬ";
+                actionBtn.style.display = 'block';
+            } else {
+                actionBtn.style.display = 'none';
+            }
+
+            // Монстр
             if (monsterActive) {
-                // Он медленно идёт к игроку
                 const monsterDir = new THREE.Vector3(
                     camera.position.x - monsterGroup.position.x,
                     0,
                     camera.position.z - monsterGroup.position.z
                 ).normalize();
                 
-                monsterGroup.position.x += monsterDir.x * 1.5 * delta;
-                monsterGroup.position.z += monsterDir.z * 1.5 * delta;
+                monsterGroup.position.x += monsterDir.x * 2.5 * delta;
+                monsterGroup.position.z += monsterDir.z * 2.5 * delta;
                 
-                // Поворот монстра в сторону игрока
                 monsterGroup.lookAt(camera.position.x, 0, camera.position.z);
 
-                // Проверка на смерть (если слишком близко)
                 const distToMonster = Math.sqrt(Math.pow(camera.position.x - monsterGroup.position.x, 2) + Math.pow(camera.position.z - monsterGroup.position.z, 2));
                 if (distToMonster < 1.5) {
                     alert("Вас поймал Мороженосчик! Игра окончена.");
