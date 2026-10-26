@@ -25,17 +25,17 @@
   .setting-row { margin: 20px 0; width: 80%; max-width: 300px; text-align: center; }
   input[type=range] { width: 100%; margin-top: 10px; }
 
-  #hud { position:absolute; top:15px; left:15px; color:#fff; z-index:10; text-shadow:1px 1px 3px #000; font-size:18px; font-weight:bold; }
-  #task { position:absolute; top:45px; left:15px; color:#ffaa00; z-index:10; text-shadow:1px 1px 3px #000; font-size:16px; font-weight:bold; }
+  #hud { position:absolute; top:15px; left:15px; color:#fff; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:18px; font-weight:bold; }
+  #task { position:absolute; top:45px; left:15px; color:#ffaa00; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:16px; font-weight:bold; }
   
-  #pauseBtn { position:absolute; top:15px; right:15px; padding:10px 15px; background:rgba(255,170,0,0.8); border:2px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; z-index:30; cursor:pointer; }
+  #pauseBtn { position:absolute; top:15px; right:15px; padding:10px 15px; background:rgba(255,170,0,0.8); border:2px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; display:none; z-index:30; cursor:pointer; }
   
-  #joy { position:absolute; bottom:80px; left:30px; width:140px; height:140px; z-index:20; }
+  #joy { position:absolute; bottom:80px; left:30px; width:140px; height:140px; z-index:20; display:none; }
   .jbtn { position:absolute; width:45px; height:45px; background:rgba(255,255,255,0.2); border:2px solid #fff; border-radius:8px; color:#fff; font-size:20px; text-align:center; line-height:45px; user-select:none; }
   .jup { left:47px; top:0; } .jdown { left:47px; bottom:0; } .jleft { left:0; top:47px; } .jright { right:0; top:47px; }
   
-  #runBtn { position:absolute; bottom:90px; right:30px; width:80px; height:80px; border-radius:50%; background:rgba(255,51,51,0.4); border:3px solid #ff3333; color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; z-index:20; }
-  #look { position:absolute; top:0; right:0; width:50%; height:100%; z-index:15; }
+  #runBtn { position:absolute; bottom:90px; right:30px; width:80px; height:80px; border-radius:50%; background:rgba(255,51,51,0.4); border:3px solid #ff3333; color:#fff; font-weight:bold; display:none; align-items:center; justify-content:center; z-index:20; }
+  #look { position:absolute; top:0; right:0; width:50%; height:100%; z-index:15; display:none; }
   
   #actBtn { position:absolute; bottom:190px; left:50%; transform:translateX(-50%); padding:15px 30px; background:#ffaa00; color:#000; border:3px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; display:none; z-index:30; }
   
@@ -47,6 +47,7 @@
 </head>
 <body>
 
+<!-- МЕНЮ -->
 <div id="menu" class="screen">
   <h1>CREAMTIME</h1>
   <p class="sub">ЧАСТЬ 1: ЗАБРОШЕННАЯ ФАБРИКА</p>
@@ -54,6 +55,7 @@
   <button class="btn" id="settingsBtn">⚙ НАСТРОЙКИ</button>
 </div>
 
+<!-- НАСТРОЙКИ -->
 <div id="settings" class="screen hidden">
   <h1 style="color:#ffaa00; margin-bottom:30px;">НАСТРОЙКИ</h1>
   <div class="setting-row">
@@ -63,12 +65,14 @@
   <button class="btn" id="backBtn">◀ НАЗАД</button>
 </div>
 
+<!-- ПАУЗА -->
 <div id="pauseScreen" class="screen hidden">
   <h1 style="color:#ffaa00; margin-bottom:30px;">ПАУЗА</h1>
   <button class="btn" id="resumeBtn">▶ ПРОДОЛЖИТЬ</button>
   <button class="btn" id="exitBtn">🏠 В МЕНЮ</button>
 </div>
 
+<!-- ИГРА -->
 <div id="hud">Глава 1: Заброшенная фабрика</div>
 <div id="task">Предохранители: 0/3</div>
 <button id="pauseBtn">⏸</button>
@@ -121,11 +125,7 @@
   var factory = new THREE.Mesh(new THREE.BoxGeometry(12,8,10), new THREE.MeshStandardMaterial({color:0x8B4513}));
   factory.position.set(0,4,-5); scene.add(factory);
 
-  // Входная дверь (снаружи)
-  var frontDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x222222}));
-  frontDoor.position.set(0,2,0.1); scene.add(frontDoor);
-
-  // Коридор 1
+  // Коридор
   var wallMat = new THREE.MeshStandardMaterial({color:0x555555});
   var floorMat = new THREE.MeshStandardMaterial({color:0x2a2a2a});
   var floor1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), floorMat); floor1.rotation.x = -Math.PI/2; floor1.position.z = -20; scene.add(floor1);
@@ -133,7 +133,7 @@
   var rWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); rWall1.rotation.y = -Math.PI/2; rWall1.position.set(5,2.5,-20); scene.add(rWall1);
   var ceil1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), wallMat); ceil1.rotation.x = Math.PI/2; ceil1.position.y = 5; ceil1.position.z = -20; scene.add(ceil1);
 
-  // Дверь в конце 1 коридора
+  // Дверь в конце
   var endDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x111111}));
   endDoor.position.set(0,2,-39.8); scene.add(endDoor);
 
@@ -160,7 +160,7 @@
   var bridge = new THREE.Mesh(new THREE.PlaneGeometry(3,10), new THREE.MeshStandardMaterial({color:0x8B4513}));
   bridge.rotation.x = -Math.PI/2; bridge.position.set(0, 0.1, -60); scene.add(bridge);
 
-  // Выход (зеленая дверь)
+  // Выход
   var exitDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x00ff00}));
   exitDoor.position.set(0,2,-79.8); scene.add(exitDoor);
 
@@ -239,14 +239,25 @@
     lx = e.touches[0].clientX; ly = e.touches[0].clientY;
   }, {passive:false});
 
+  // Кнопка действия
   var actBtn = document.getElementById('actBtn');
   actBtn.onclick = function() {
-    if(!inside && camera.position.z>2) { inside=true; camera.position.set(0,1.6,-2); actBtn.style.display='none'; }
-    else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<2) {
-      document.getElementById('modal').style.display='flex'; noteRead=true; actBtn.style.display='none';
+    if(!inside && camera.position.z>2) { 
+      inside=true; 
+      camera.position.set(0,1.6,-2); 
+      actBtn.style.display='none'; 
     }
-    else if(inside && collected===3 && !doorOpen && camera.position.z<-36) {
-      doorOpen=true; endDoor.position.z=-39.9; mActive=true; monster.visible=true; actBtn.style.display='none';
+    else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) {
+      document.getElementById('modal').style.display='flex'; 
+      noteRead=true; 
+      actBtn.style.display='none';
+    }
+    else if(inside && collected===3 && !doorOpen && camera.position.z<-35) {
+      doorOpen=true; 
+      endDoor.position.z=-100; // Убираем дверь
+      mActive=true; 
+      monster.visible=true; 
+      actBtn.style.display='none';
       inRoom2 = true;
       document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
     }
@@ -272,11 +283,11 @@
     if(moveL){ camera.position.x-=right.x*sp*delta; camera.position.z-=right.z*sp*delta; }
     if(moveR){ camera.position.x+=right.x*sp*delta; camera.position.z+=right.z*sp*delta; }
 
-    // Стены
+    // Коллизия (стены)
     if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
     if(camera.position.z > 15 || camera.position.z < -79) camera.position.z = oldZ;
 
-    // Обрыв
+    // Обрыв (падение)
     if(camera.position.z < -55 && camera.position.z > -65) {
         if (camera.position.x < -1.5 || camera.position.x > 1.5) {
             alert('Вы упали в обрыв!');
@@ -285,12 +296,23 @@
     }
 
     // Кнопки
-    if(!inside && camera.position.z<3) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
-    else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<2) { actBtn.innerText="📜 ПРОЧИТАТЬ"; actBtn.style.display='block'; }
-    else if(inside && collected===3 && !doorOpen && camera.position.z<-36) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
-    else { actBtn.style.display='none'; }
+    if(!inside && camera.position.z<3) { 
+      actBtn.innerText="🚪 ВОЙТИ"; 
+      actBtn.style.display='block'; 
+    }
+    else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) { 
+      actBtn.innerText="📜 ПРОЧИТАТЬ"; 
+      actBtn.style.display='block'; 
+    }
+    else if(inside && collected===3 && !doorOpen && camera.position.z<-35) { 
+      actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; 
+      actBtn.style.display='block'; 
+    }
+    else { 
+      actBtn.style.display='none'; 
+    }
 
-    // Сбор
+    // Сбор предохранителей
     if(inside && collected<3) {
       for(var i=fuses.length-1; i>=0; i--){
         var f = fuses[i];
@@ -314,6 +336,7 @@
       monster.position.z += mDir.z * 3.5 * delta;
       monster.lookAt(camera.position.x, 0, camera.position.z);
       
+      // Падение монстра
       if (monster.position.z < -55 && monster.position.z > -65) {
         if (monster.position.x < -1.5 || monster.position.x > 1.5) {
             monster.visible = false; mActive = false;
@@ -322,6 +345,7 @@
         }
       }
       
+      // Смерть
       if(Math.hypot(camera.position.x-monster.position.x, camera.position.z-monster.position.z)<1.5) {
         alert("Вас поймал Мороженосчик!"); location.reload();
       }
