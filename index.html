@@ -127,7 +127,6 @@
         sunLight.position.set(10, 20, 10);
         scene.add(sunLight);
 
-        // --- УЛИЦА ---
         const grassMat = new THREE.MeshStandardMaterial({ color: 0x4CAF50 });
         const grass = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), grassMat);
         grass.rotation.x = -Math.PI / 2; grass.position.y = -0.1; scene.add(grass);
@@ -136,7 +135,6 @@
         const road = new THREE.Mesh(new THREE.PlaneGeometry(6, 100), roadMat);
         road.rotation.x = -Math.PI / 2; road.position.y = 0; scene.add(road);
 
-        // --- ФАБРИКА ---
         const factoryMat = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
         const factory = new THREE.Mesh(new THREE.BoxGeometry(12, 8, 10), factoryMat);
         factory.position.set(0, 4, -5); scene.add(factory);
@@ -145,7 +143,6 @@
         const door = new THREE.Mesh(new THREE.BoxGeometry(2, 4, 0.2), doorMat);
         door.position.set(0, 2, 0.1); scene.add(door);
 
-        // --- ВНУТРЕННИЙ КОРИДОР ---
         const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.8 });
         const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.9 });
 
@@ -182,7 +179,6 @@
         const noteMesh = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.02, 0.3), noteMat);
         noteMesh.position.set(-2, 1.06, -25); scene.add(noteMesh);
 
-        // --- ЗАДАНИЕ: 3 ПРЕДОХРАНИТЕЛЯ ---
         const fuseMat = new THREE.MeshStandardMaterial({ color: 0xffff00, emissive: 0xffff00 });
         const fuses = [];
         const fusePositions = [
@@ -199,14 +195,12 @@
 
         let collectedFuses = 0;
 
-        // --- ЗАКРЫТАЯ ДВЕРЬ В КОНЦЕ ---
         const endDoorMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
         const endDoor = new THREE.Mesh(new THREE.BoxGeometry(2, 4, 0.2), endDoorMat);
         endDoor.position.set(0, 2, -39.8);
         scene.add(endDoor);
         let endDoorOpen = false;
 
-        // --- МОРОЖЕНОСЧИК ---
         const monsterGroup = new THREE.Group();
         const bodyMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee });
         const body = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), bodyMat); body.position.y = 1; monsterGroup.add(body);
@@ -220,7 +214,6 @@
         monsterGroup.visible = false;
         scene.add(monsterGroup);
 
-        // --- ЛОГИКА ---
         let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
         let isRunning = false;
         const walkSpeed = 3;
@@ -373,4 +366,8 @@
             } else if (playerInside && !noteRead && Math.sqrt(Math.pow(camera.position.x - (-2), 2) + Math.pow(camera.position.z - (-25), 2)) < 2) {
                 actionBtn.innerText = "📜 ПРОЧИТАТЬ";
                 actionBtn.style.display = 'block';
-            } else
+            } else if (playerInside && collectedFuses === 3 && !endDoorOpen && camera.position.z < -36) {
+                actionBtn.innerText = "🔓 ОТКРЫТЬ ДВЕРЬ";
+                actionBtn.style.display = 'block';
+            } else {
+                a
