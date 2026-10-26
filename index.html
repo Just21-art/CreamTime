@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime v0.3</title>
+<title>CreamTime v0.4</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
@@ -29,8 +29,7 @@
   #task { position:absolute; top:45px; left:15px; color:#ffaa00; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:16px; font-weight:bold; }
   
   #pauseBtn { position:absolute; top:15px; right:15px; padding:10px 15px; background:rgba(255,170,0,0.8); border:2px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; display:none; z-index:30; cursor:pointer; }
-  #pauseBtn:active { transform:scale(0.95); }
-
+  
   #joy { position:absolute; bottom:80px; left:30px; width:140px; height:140px; z-index:20; display:none; }
   .jbtn { position:absolute; width:45px; height:45px; background:rgba(255,255,255,0.2); border:2px solid #fff; border-radius:8px; color:#fff; font-size:20px; text-align:center; line-height:45px; user-select:none; }
   .jup { left:47px; top:0; } .jdown { left:47px; bottom:0; } .jleft { left:0; top:47px; } .jright { right:0; top:47px; }
@@ -101,7 +100,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
   var scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x87CEEB); // Вернули синее небо
+  scene.background = new THREE.Color(0x87CEEB); // Небо
   scene.fog = new THREE.Fog(0x87CEEB, 10, 50);
 
   var camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
@@ -116,6 +115,19 @@
   var light1 = new THREE.PointLight(0xffaa00, 1.5, 30); light1.position.set(0, 4, -20); scene.add(light1);
   var light2 = new THREE.PointLight(0xff0000, 2, 30); light2.position.set(0, 4, -60); scene.add(light2); 
 
+  // Текстуры (для реалистичности)
+  var canvas = document.createElement('canvas');
+  canvas.width = 64; canvas.height = 64;
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#444'; ctx.fillRect(0, 0, 64, 64);
+  ctx.strokeStyle = '#222'; ctx.lineWidth = 2; ctx.strokeRect(0, 0, 64, 64);
+  var texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(5, 20); // Много плиток
+
+  var floorMat = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.8 });
+  var wallMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.9 });
+
   // --- УЛИЦА ---
   var grass = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshStandardMaterial({color:0x4CAF50}));
   grass.rotation.x = -Math.PI/2; grass.position.y = -0.1; scene.add(grass);
@@ -123,20 +135,21 @@
   road.rotation.x = -Math.PI/2; scene.add(road);
   var factory = new THREE.Mesh(new THREE.BoxGeometry(12,8,10), new THREE.MeshStandardMaterial({color:0x8B4513}));
   factory.position.set(0,4,-5); scene.add(factory);
+  
+  // Главная дверь (черная)
   var frontDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x222222}));
   frontDoor.position.set(0,2,0.1); scene.add(frontDoor);
 
   // --- 1 КОМНАТА (КОРИДОР) ---
-  var wallMat = new THREE.MeshStandardMaterial({color:0x3a3a3a});
-  var floorMat = new THREE.MeshStandardMaterial({color:0x2a2a2a});
-
   var floor1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), floorMat); floor1.rotation.x = -Math.PI/2; floor1.position.z = -20; scene.add(floor1);
   var ceil1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), wallMat); ceil1.rotation.x = Math.PI/2; ceil1.position.y = 5; ceil1.position.z = -20; scene.add(ceil1);
+  
+  // Стены 1 комнаты (с коллизией)
   var lWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); lWall1.rotation.y = Math.PI/2; lWall1.position.set(-5,2.5,-20); scene.add(lWall1);
   var rWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); rWall1.rotation.y = -Math.PI/2; rWall1.position.set(5,2.5,-20); scene.add(rWall1);
   var bWall1 = new THREE.Mesh(new THREE.PlaneGeometry(10,5), wallMat); bWall1.position.set(0,2.5,-40); scene.add(bWall1);
   
-  // Стена между улицей и коридором (чтобы игрок не выходил)
+  // Перегородка между улицей и коридором
   var divider = new THREE.Mesh(new THREE.PlaneGeometry(12,5), new THREE.MeshStandardMaterial({color:0x2a2a2a}));
   divider.position.set(0, 2.5, 0); scene.add(divider);
 
@@ -163,11 +176,19 @@
   var collected = 0;
 
   // --- 2 КОМНАТА (ПРОПАСТЬ) ---
+  // Пол до обрыва
   var floor2a = new THREE.Mesh(new THREE.PlaneGeometry(10,10), floorMat); floor2a.rotation.x = -Math.PI/2; floor2a.position.set(0, 0, -50); scene.add(floor2a);
+  // Пол после обрыва
   var floor2b = new THREE.Mesh(new THREE.PlaneGeometry(10,10), floorMat); floor2b.rotation.x = -Math.PI/2; floor2b.position.set(0, 0, -70); scene.add(floor2b);
+  // МОСТ через обрыв
+  var bridge = new THREE.Mesh(new THREE.PlaneGeometry(3,10), new THREE.MeshStandardMaterial({color:0x8B4513}));
+  bridge.rotation.x = -Math.PI/2; bridge.position.set(0, 0.1, -60); scene.add(bridge);
   
+  // Стены 2 комнаты
   var lWall2 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); lWall2.rotation.y = Math.PI/2; lWall2.position.set(-5,2.5,-60); scene.add(lWall2);
   var rWall2 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); rWall2.rotation.y = -Math.PI/2; rWall2.position.set(5,2.5,-60); scene.add(rWall2);
+  // Потолок во 2 комнате (добавлен)
+  var ceil2 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), wallMat); ceil2.rotation.x = Math.PI/2; ceil2.position.y = 5; ceil2.position.z = -60; scene.add(ceil2);
   var bWall2 = new THREE.Mesh(new THREE.PlaneGeometry(10,5), wallMat); bWall2.position.set(0,2.5,-80); scene.add(bWall2);
   
   // Выход (зеленая дверь)
@@ -276,29 +297,35 @@
     var dir = new THREE.Vector3(); camera.getWorldDirection(dir);
     var right = new THREE.Vector3(); right.crossVectors(camera.up, dir).normalize();
 
+    // Запоминаем старую позицию
+    var oldX = camera.position.x;
+    var oldZ = camera.position.z;
+
     if(moveF){ camera.position.x+=dir.x*sp*delta; camera.position.z+=dir.z*sp*delta; }
     if(moveB){ camera.position.x-=dir.x*sp*delta; camera.position.z-=dir.z*sp*delta; }
     if(moveL){ camera.position.x-=right.x*sp*delta; camera.position.z-=right.z*sp*delta; }
     if(moveR){ camera.position.x+=right.x*sp*delta; camera.position.z+=right.z*sp*delta; }
 
-    // Ограничения перемещения
-    if(!inside){
-      camera.position.x = Math.max(-4, Math.min(4, camera.position.x));
-      camera.position.z = Math.max(1, Math.min(15, camera.position.z));
-    } else {
-      camera.position.x = Math.max(-4.5, Math.min(4.5, camera.position.x));
+    // Коллизия стен (чтобы не проходить сквозь)
+    if(inside){
+      if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       
       if (!inRoom2) {
-        camera.position.z = Math.max(-39, Math.min(-1, camera.position.z));
+        if(camera.position.z > -1 || camera.position.z < -39) camera.position.z = oldZ;
       } else {
-        camera.position.z = Math.max(-79, Math.min(-40, camera.position.z));
+        if(camera.position.z > -40 || camera.position.z < -79) camera.position.z = oldZ;
         
-        // Проверка на падение в обрыв
+        // Проверка обрыва (если мы не на мосту)
         if (camera.position.z < -55 && camera.position.z > -65) {
-           alert("Вы упали в обрыв! Игра окончена.");
-           location.reload();
+           if (camera.position.x < -1.5 || camera.position.x > 1.5) {
+             alert("Вы упали в обрыв! Игра окончена.");
+             location.reload();
+           }
         }
       }
+    } else {
+      if(camera.position.x > 4 || camera.position.x < -4) camera.position.x = oldX;
+      if(camera.position.z > 15 || camera.position.z < 1) camera.position.z = oldZ;
     }
 
     // Кнопки действий
@@ -336,12 +363,14 @@
       monster.position.z += mDir.z * 3.5 * delta;
       monster.lookAt(camera.position.x, 0, camera.position.z);
       
-      // Падение монстра
-      if (monster.position.z < -52 && monster.position.z > -68) {
-        monster.visible = false;
-        mActive = false;
-        document.getElementById('task').innerText = "Мороженосчик упал! Бегите к выходу!";
-        alert("Вы сбросили Мороженосчика в обрыв! Бегите к зеленой двери.");
+      // Падение монстра (если он наступил на обрыв вне моста)
+      if (monster.position.z < -55 && monster.position.z > -65) {
+        if (monster.position.x < -1.5 || monster.position.x > 1.5) {
+            monster.visible = false;
+            mActive = false;
+            document.getElementById('task').innerText = "Мороженосчик упал! Бегите к выходу!";
+            alert("Вы сбросили Мороженосчика в обрыв! Бегите к зеленой двери.");
+        }
       }
       
       // Смерть игрока
@@ -353,9 +382,4 @@
   }
 
   window.addEventListener('resize', function(){
-    camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
-  });
-</script>
-</body>
-   </html>
+    camera.aspect
