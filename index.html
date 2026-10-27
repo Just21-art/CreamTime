@@ -9,7 +9,6 @@
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
   canvas { display:block; }
   
-  /* Экраны */
   .screen {
     position:fixed; top:0; left:0; width:100%; height:100%;
     background:linear-gradient(135deg, #1a0a0a 0%, #0a0a0a 100%);
@@ -23,7 +22,6 @@
   .btn { padding:15px; font-size:20px; border:2px solid #ff3333; background:rgba(255,51,51,0.1); color:white; border-radius:10px; font-weight:bold; cursor:pointer; width:80%; max-width:300px; margin-bottom:15px; }
   .btn:active { transform:scale(0.95); background:#ff3333; color:#000; }
 
-  /* Игровой интерфейс */
   #hud { position:absolute; top:15px; left:15px; color:#fff; z-index:10; text-shadow:1px 1px 3px #000; font-size:18px; font-weight:bold; }
   #task { position:absolute; top:45px; left:15px; color:#ffaa00; z-index:10; text-shadow:1px 1px 3px #000; font-size:16px; font-weight:bold; }
   
@@ -46,21 +44,18 @@
 </head>
 <body>
 
-<!-- МЕНЮ -->
 <div id="menu" class="screen">
   <h1>CREAMTIME</h1>
   <p class="sub">ЧАСТЬ 1: ЗАБРОШЕННАЯ ФАБРИКА</p>
   <button class="btn" id="startBtn">▶ ИГРАТЬ</button>
 </div>
 
-<!-- ПАУЗА -->
 <div id="pauseScreen" class="screen hidden">
   <h1 style="color:#ffaa00; margin-bottom:30px;">ПАУЗА</h1>
   <button class="btn" id="resumeBtn">▶ ПРОДОЛЖИТЬ</button>
   <button class="btn" id="exitBtn">🏠 В МЕНЮ</button>
 </div>
 
-<!-- ИГРА -->
 <div id="hud">Глава 1: Заброшенная фабрика</div>
 <div id="task">Предохранители: 0/3</div>
 <button id="pauseBtn">⏸</button>
@@ -100,7 +95,6 @@
   var renderer = new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(window.innerWidth, window.innerHeight); document.body.appendChild(renderer.domElement);
 
-  // Свет
   scene.add(new THREE.AmbientLight(0xffffff, 0.6));
   var sun = new THREE.DirectionalLight(0xffffff, 1); sun.position.set(10,20,10); scene.add(sun);
   var light1 = new THREE.PointLight(0xffaa00, 1.5, 30); light1.position.set(0, 4, -20); scene.add(light1);
@@ -113,6 +107,10 @@
   road.rotation.x = -Math.PI/2; scene.add(road);
   var factory = new THREE.Mesh(new THREE.BoxGeometry(12,8,10), new THREE.MeshStandardMaterial({color:0x8B4513}));
   factory.position.set(0,4,-5); scene.add(factory);
+
+  // Входная дверь (ВОЗВРАЩЕНА)
+  var frontDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x222222}));
+  frontDoor.position.set(0,2,0.1); scene.add(frontDoor);
 
   // Коридор 1
   var wallMat = new THREE.MeshStandardMaterial({color:0x555555});
@@ -143,12 +141,15 @@
   });
   var collected = 0;
 
-  // Комната 2 (обрыв + крыша)
+  // Комната 2 (Стены и Крыша)
   var floor2a = new THREE.Mesh(new THREE.PlaneGeometry(10,10), floorMat); floor2a.rotation.x = -Math.PI/2; floor2a.position.set(0, 0, -50); scene.add(floor2a);
   var floor2b = new THREE.Mesh(new THREE.PlaneGeometry(10,10), floorMat); floor2b.rotation.x = -Math.PI/2; floor2b.position.set(0, 0, -70); scene.add(floor2b);
   var bridge = new THREE.Mesh(new THREE.PlaneGeometry(3,10), new THREE.MeshStandardMaterial({color:0x8B4513}));
   bridge.rotation.x = -Math.PI/2; bridge.position.set(0, 0.1, -60); scene.add(bridge);
   
+  // Стены 2 комнаты (добавлены)
+  var lWall2 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); lWall2.rotation.y = Math.PI/2; lWall2.position.set(-5,2.5,-60); scene.add(lWall2);
+  var rWall2 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); rWall2.rotation.y = -Math.PI/2; rWall2.position.set(5,2.5,-60); scene.add(rWall2);
   var ceil2 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), wallMat); ceil2.rotation.x = Math.PI/2; ceil2.position.y = 5; ceil2.position.z = -60; scene.add(ceil2);
 
   // Выход (зеленая дверь)
@@ -164,7 +165,6 @@
   var e2 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e2.position.set(0.3,2.6,0.61); monster.add(e2);
   monster.position.set(-4,0,-2); monster.visible=false; scene.add(monster);
 
-  // Переменные
   var moveF=false, moveB=false, moveL=false, moveR=false, isRun=false;
   var speed=3, runSpeed=6, inside=false, won=false, cameraSens=0.005, mActive=false, inRoom2=false;
   var paused = false, noteRead = false, doorOpen = false;
@@ -222,7 +222,7 @@
   // Кнопка действия
   var actBtn = document.getElementById('actBtn');
   actBtn.onclick = function() {
-    if(!inside && camera.position.z>2) { 
+    if(!inside && camera.position.z>2 && camera.position.z<7) { // Расширенная зона входа
       inside=true; camera.position.set(0,1.6,-2); actBtn.style.display='none'; 
     }
     else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) {
@@ -255,7 +255,7 @@
     if(moveL){ camera.position.x-=right.x*sp*delta; camera.position.z-=right.z*sp*delta; }
     if(moveR){ camera.position.x+=right.x*sp*delta; camera.position.z+=right.z*sp*delta; }
 
-    // Коллизия (стены)
+    // Коллизия стен
     if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
     if(camera.position.z > 15 || camera.position.z < -79) camera.position.z = oldZ;
 
@@ -267,8 +267,8 @@
         }
     }
 
-    // Кнопки
-    if(!inside && camera.position.z<3) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
+    // Кнопки UI
+    if(!inside && camera.position.z<7 && camera.position.z>2) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
     else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) { actBtn.innerText="📜 ПРОЧИТАТЬ"; actBtn.style.display='block'; }
     else if(inside && collected===3 && !doorOpen && camera.position.z<-35) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
     else { actBtn.style.display='none'; }
@@ -293,11 +293,13 @@
     // Монстр
     if(mActive && monster.visible){
       var mDir = new THREE.Vector3(camera.position.x-monster.position.x, 0, camera.position.z-monster.position.z).normalize();
-      monster.position.x += mDir.x * 3.5 * delta;
-      monster.position.z += mDir.z * 3.5 * delta;
+      // Он медленнее (2.5), чтобы можно было увернуться
+      monster.position.x += mDir.x * 2.5 * delta;
+      monster.position.z += mDir.z * 2.5 * delta;
       monster.lookAt(camera.position.x, 0, camera.position.z);
       
-      if (monster.position.z < -55 && monster.position.z > -65) {
+      // Падение монстра
+      if (monster.position.z < -53 && monster.position.z > -67) {
         if (monster.position.x < -1.5 || monster.position.x > 1.5) {
             monster.visible = false; mActive = false;
             document.getElementById('task').innerText = "Мороженосчик упал! Бегите к выходу!";
@@ -305,6 +307,7 @@
         }
       }
       
+      // Смерть
       if(Math.hypot(camera.position.x-monster.position.x, camera.position.z-monster.position.z)<1.5) {
         alert("Вас поймал Мороженосчик!"); location.reload();
       }
@@ -313,4 +316,4 @@
   }
 </script>
 </body>
-</html>
+ </html>
