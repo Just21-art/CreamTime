@@ -86,8 +86,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
   var scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x050505); // Очень темный фон
-  scene.fog = new THREE.Fog(0x050505, 5, 30); // Густой туман
+  // Улица теперь ночная, но не черная (темно-синяя)
+  scene.background = new THREE.Color(0x1a2a3a); 
+  scene.fog = new THREE.Fog(0x1a2a3a, 20, 50); // Туман отодвинут, чтобы видеть здание
 
   var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
   camera.position.set(0, 1.6, 10); camera.rotation.order = 'YXZ';
@@ -95,23 +96,31 @@
   var renderer = new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(window.innerWidth, window.innerHeight); document.body.appendChild(renderer.domElement);
 
-  // --- СВЕТ (Мрачный) ---
-  scene.add(new THREE.AmbientLight(0x111111, 0.5)); // Очень тусклый общий свет
-  var sun = new THREE.DirectionalLight(0x333333, 0.5); sun.position.set(10,20,10); scene.add(sun);
-  var light1 = new THREE.PointLight(0xffaa00, 1.2, 20); light1.position.set(0, 4, -20); scene.add(light1);
-  var light2 = new THREE.PointLight(0xff0000, 1.5, 25); light2.position.set(0, 4, -60); scene.add(light2); 
+  // --- СВЕТ ---
+  // Общий свет для улицы (лунный)
+  var moonLight = new THREE.AmbientLight(0x444466, 0.8); 
+  scene.add(moonLight);
 
-  // --- ТЕКСТУРЫ (Генерируем программно) ---
+  // ФОНАРЬ У ВХОДА (Яркий свет)
+  var lampLight = new THREE.PointLight(0xffaa00, 2, 15); 
+  lampLight.position.set(0, 4, 2); // Прямо над входом
+  scene.add(lampLight);
+
+  // Свет внутри коридора (тусклый)
+  var light1 = new THREE.PointLight(0xffaa00, 1, 20); light1.position.set(0, 4, -20); scene.add(light1);
+  // Свет во второй комнате (красный, как в аду)
+  var light2 = new THREE.PointLight(0xaa0000, 1.5, 25); light2.position.set(0, 4, -60); scene.add(light2); 
+
+  // --- ТЕКСТУРЫ ---
   // Плитка для пола
   var canvasFloor = document.createElement('canvas');
   canvasFloor.width = 128; canvasFloor.height = 128;
   var ctxFloor = canvasFloor.getContext('2d');
   ctxFloor.fillStyle = '#222'; ctxFloor.fillRect(0, 0, 128, 128);
   ctxFloor.strokeStyle = '#111'; ctxFloor.lineWidth = 4; ctxFloor.strokeRect(0, 0, 128, 128);
-  ctxFloor.strokeStyle = '#333'; ctxFloor.lineWidth = 1; ctxFloor.strokeRect(2, 2, 124, 124);
   var texFloor = new THREE.CanvasTexture(canvasFloor);
   texFloor.wrapS = texFloor.wrapT = THREE.RepeatWrapping;
-  texFloor.repeat.set(10, 40); // Много плиток
+  texFloor.repeat.set(10, 40);
 
   // Бетон для стен
   var canvasWall = document.createElement('canvas');
@@ -128,15 +137,25 @@
 
   var floorMat = new THREE.MeshStandardMaterial({ map: texFloor, roughness: 0.9 });
   var wallMat = new THREE.MeshStandardMaterial({ map: texWall, roughness: 0.9 });
-  var doorMat = new THREE.MeshStandardMaterial({ color: 0x2a1a1a, roughness: 0.7 }); // Темное дерево
+  var doorMat = new THREE.MeshStandardMaterial({ color: 0x2a1a1a, roughness: 0.7 });
 
   // --- УЛИЦА ---
-  var grass = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshStandardMaterial({color:0x1a3a1a})); // Темная трава
+  var grass = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshStandardMaterial({color:0x1a3a1a}));
   grass.rotation.x = -Math.PI/2; grass.position.y = -0.1; scene.add(grass);
+  
   var road = new THREE.Mesh(new THREE.PlaneGeometry(6,100), new THREE.MeshStandardMaterial({color:0x222222}));
   road.rotation.x = -Math.PI/2; scene.add(road);
-  var factory = new THREE.Mesh(new THREE.BoxGeometry(12,8,10), new THREE.MeshStandardMaterial({color:0x3a1a1a})); // Темный кирпич
+  
+  // Фабрика
+  var factory = new THREE.Mesh(new THREE.BoxGeometry(12,8,10), new THREE.MeshStandardMaterial({color:0x3a1a1a}));
   factory.position.set(0,4,-5); scene.add(factory);
+
+  // ФОНАРНЫЙ СТОЛБ
+  var poleMat = new THREE.MeshStandardMaterial({color: 0x111111});
+  var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 4), poleMat);
+  pole.position.set(2, 2, 2); scene.add(pole);
+  var lampHead = new THREE.Mesh(new THREE.SphereGeometry(0.3), new THREE.MeshStandardMaterial({color: 0xffffaa, emissive: 0xffaa00}));
+  lampHead.position.set(2, 4, 2); scene.add(lampHead);
 
   // Входная дверь (Реалистичная)
   var doorFrame = new THREE.Mesh(new THREE.BoxGeometry(2.4,4.4,0.1), new THREE.MeshStandardMaterial({color:0x111}));
@@ -152,7 +171,7 @@
   var rWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); rWall1.rotation.y = -Math.PI/2; rWall1.position.set(5,2.5,-20); scene.add(rWall1);
   var ceil1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), wallMat); ceil1.rotation.x = Math.PI/2; ceil1.position.y = 5; ceil1.position.z = -20; scene.add(ceil1);
 
-  // Дверь в конце 1 коридора (Реалистичная)
+  // Дверь в конце 1 коридора
   var endDoorFrame = new THREE.Mesh(new THREE.BoxGeometry(2.4,4.4,0.1), new THREE.MeshStandardMaterial({color:0x111}));
   endDoorFrame.position.set(0,2.2,-39.9); scene.add(endDoorFrame);
   var endDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat);
