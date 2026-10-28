@@ -256,7 +256,7 @@
       document.getElementById('modal').style.display='flex'; noteRead=true; actBtn.style.display='none';
     }
     else if(inside && !inRoom3 && collected===3 && !doorOpen && camera.position.z<-35) {
-      doorOpen=true; endDoor.visible=false; // Дверь ПРОПАДАЕТ
+      doorOpen=true; endDoor.visible=false; // Дверь пропадает
       inRoom3 = true; camera.position.set(0,1.6,-42);
       document.getElementById('task').innerText = "Создай игрушку на станке";
     }
@@ -267,7 +267,7 @@
     else if(inRoom3 && toyCreated && !toyScanned && Math.hypot(camera.position.x+3, camera.position.z+60)<2.5) {
       toyScanned = true; toy.visible = false;
       document.getElementById('task').innerText = "Дверь открыта. Беги!";
-      door3Open = true; door3.visible=false; // Дверь ПРОПАДАЕТ
+      door3Open = true; door3.visible=false; // Дверь пропадает
       mActive = true; monster.visible = true;
     }
   };
@@ -294,7 +294,7 @@
     // Ограничения X
     if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
 
-    // Ограничения Z (стены с проёмами)
+    // Ограничения Z
     if(!inside) {
       if(camera.position.z > 15 || camera.position.z < 1) camera.position.z = oldZ;
     } else if(!inRoom3 && !inRoom2) {
