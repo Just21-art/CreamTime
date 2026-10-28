@@ -257,7 +257,8 @@
     }
     else if(inside && !inRoom3 && collected===3 && !doorOpen && camera.position.z<-35) {
       doorOpen=true; endDoor.visible=false; // Дверь пропадает
-      inRoom3 = true; camera.position.set(0,1.6,-42);
+      inRoom3 = true; 
+      camera.position.set(0,1.6,-45); // Телепорт прямо в центр 3-й комнаты
       document.getElementById('task').innerText = "Создай игрушку на станке";
     }
     else if(inRoom3 && !toyCreated && Math.hypot(camera.position.x, camera.position.z+50)<2.5) {
@@ -294,23 +295,12 @@
     // Ограничения X
     if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
 
-    // Ограничения Z (Физика стен)
-    // Если мы в коридоре 1 и дверь ЗАКРЫТА, не пускаем дальше -40
-    if(!inside) {
-      if(camera.position.z > 15 || camera.position.z < 1) camera.position.z = oldZ;
-    } else if(!inRoom3 && !inRoom2) {
-      if(camera.position.z > -1 || camera.position.z < -40) camera.position.z = oldZ; // ЖЕСТКАЯ СТЕНА
-    } else if(inRoom3 && !inRoom2) {
-      // В мастерской
-      if(camera.position.z > -40 || camera.position.z < -65) camera.position.z = oldZ; // ЖЕСТКАЯ СТЕНА
-    } else if(inRoom2) {
-      // В комнате с обрывом
-      if(camera.position.z > -65 || camera.position.z < -99) camera.position.z = oldZ;
-      
-      // Обрыв
-      if(camera.position.z < -77 && camera.position.z > -87) {
-        if (camera.position.x < -1.5 || camera.position.x > 1.5) { alert('Вы упали в обрыв!'); location.reload(); }
-      }
+    // Ограничения Z (полная карта)
+    if(camera.position.z > 15 || camera.position.z < -99) camera.position.z = oldZ;
+    
+    // Обрыв (если упал в яму)
+    if(inRoom2 && camera.position.z < -77 && camera.position.z > -87) {
+      if (camera.position.x < -1.5 || camera.position.x > 1.5) { alert('Вы упали в обрыв!'); location.reload(); }
     }
 
     // Кнопки UI
@@ -357,4 +347,4 @@
   }
 </script>
 </body>
-</html>
+ </html>
