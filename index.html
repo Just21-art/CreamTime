@@ -270,6 +270,8 @@
       document.getElementById('task').innerText = "Дверь открыта. Беги!";
       door3Open = true; door3.visible=false; // Дверь пропадает
       mActive = true; monster.visible = true;
+      inRoom2 = true; // Теперь мы официально в комнате 2
+      camera.position.set(0, 1.6, -66); // Телепорт в комнату 2
     }
   };
   document.getElementById('closeMod').onclick = function() { document.getElementById('modal').style.display='none'; };
@@ -322,8 +324,11 @@
       }
     }
 
-    // Финиш
-    if(inRoom2 && camera.position.z < -98) { won = true; document.getElementById('win').style.display='flex'; }
+    // Финиш (Победа) — теперь срабатывает на -97, когда ты у зеленой двери
+    if(inRoom2 && camera.position.z < -97) { 
+      won = true; 
+      document.getElementById('win').style.display='flex'; 
+    }
 
     // Монстр
     if(mActive && monster.visible){
@@ -347,4 +352,4 @@
   }
 </script>
 </body>
- </html>
+</html>
