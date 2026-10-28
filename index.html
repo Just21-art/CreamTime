@@ -182,7 +182,7 @@
   var toy = new THREE.Mesh(new THREE.BoxGeometry(0.3,0.3,0.3), new THREE.MeshStandardMaterial({color:0xff99cc}));
   toy.position.set(-3, 1.2, -60); toy.visible = false; scene.add(toy);
 
-  // КОМНАТА 2 (Обрыв, от -65 до -100) - СДЕЛАНА ДЛИННЕЕ!
+  // КОМНАТА 2 (Обрыв, от -65 до -100)
   var floor2a = new THREE.Mesh(new THREE.PlaneGeometry(10,15), floorMat); floor2a.rotation.x = -Math.PI/2; floor2a.position.set(0, 0, -72.5); scene.add(floor2a);
   var floor2b = new THREE.Mesh(new THREE.PlaneGeometry(10,15), floorMat); floor2b.rotation.x = -Math.PI/2; floor2b.position.set(0, 0, -92.5); scene.add(floor2b);
   var bridge = new THREE.Mesh(new THREE.PlaneGeometry(3,10), new THREE.MeshStandardMaterial({color:0x3a2a2a})); bridge.rotation.x = -Math.PI/2; bridge.position.set(0, 0.1, -82.5); scene.add(bridge);
@@ -300,16 +300,18 @@
     } else if(!inRoom3 && !inRoom2) {
       // В коридоре 1
       if(camera.position.z > -1 || camera.position.z < -40) camera.position.z = oldZ;
-      if(camera.position.z < -38 && Math.abs(camera.position.x) > 1) camera.position.z = oldZ; // Стена 1
+      
+      // Если дверь закрыта, не пускаем в комнату 3
+      if(!doorOpen && camera.position.z < -38 && Math.abs(camera.position.x) > 1) camera.position.z = oldZ;
     } else if(inRoom3 && !inRoom2) {
       // В мастерской
       if(camera.position.z > -40 || camera.position.z < -65) camera.position.z = oldZ;
-      if(camera.position.z > -42 && Math.abs(camera.position.x) > 1) camera.position.z = oldZ; // Стена 1 (сзади)
-      if(camera.position.z < -63 && Math.abs(camera.position.x) > 1) camera.position.z = oldZ; // Стена 3 (впереди)
+      
+      // Если дверь закрыта, не пускаем в комнату 2
+      if(!door3Open && camera.position.z < -63 && Math.abs(camera.position.x) > 1) camera.position.z = oldZ;
     } else if(inRoom2) {
-      // В комнате с обрывом (длинная)
+      // В комнате с обрывом
       if(camera.position.z > -65 || camera.position.z < -99) camera.position.z = oldZ;
-      if(camera.position.z > -67 && Math.abs(camera.position.x) > 1) camera.position.z = oldZ; // Стена 3 (сзади)
       
       // Обрыв
       if(camera.position.z < -77 && camera.position.z > -87) {
@@ -361,4 +363,4 @@
   }
 </script>
 </body>
-</html>
+ </html>
