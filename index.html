@@ -294,7 +294,7 @@
     // Ограничения X
     if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
 
-    // Ограничения Z
+    // Ограничения Z (стены с проёмами)
     if(!inside) {
       if(camera.position.z > 15 || camera.position.z < 1) camera.position.z = oldZ;
     } else if(!inRoom3 && !inRoom2) {
