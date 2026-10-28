@@ -256,7 +256,7 @@
       document.getElementById('modal').style.display='flex'; noteRead=true; actBtn.style.display='none';
     }
     else if(inside && !inRoom3 && collected===3 && !doorOpen && camera.position.z<-35) {
-      doorOpen=true; endDoor.position.x=3; // Сдвигаем дверь в сторону
+      doorOpen=true; endDoor.visible=false; // Дверь ПРОПАДАЕТ
       inRoom3 = true; camera.position.set(0,1.6,-42);
       document.getElementById('task').innerText = "Создай игрушку на станке";
     }
@@ -267,7 +267,7 @@
     else if(inRoom3 && toyCreated && !toyScanned && Math.hypot(camera.position.x+3, camera.position.z+60)<2.5) {
       toyScanned = true; toy.visible = false;
       document.getElementById('task').innerText = "Дверь открыта. Беги!";
-      door3Open = true; door3.position.x=3; // Сдвигаем дверь в сторону
+      door3Open = true; door3.visible=false; // Дверь ПРОПАДАЕТ
       mActive = true; monster.visible = true;
     }
   };
@@ -300,15 +300,9 @@
     } else if(!inRoom3 && !inRoom2) {
       // В коридоре 1
       if(camera.position.z > -1 || camera.position.z < -40) camera.position.z = oldZ;
-      
-      // Если дверь закрыта, не пускаем в комнату 3
-      if(!doorOpen && camera.position.z < -38 && Math.abs(camera.position.x) > 1) camera.position.z = oldZ;
     } else if(inRoom3 && !inRoom2) {
       // В мастерской
       if(camera.position.z > -40 || camera.position.z < -65) camera.position.z = oldZ;
-      
-      // Если дверь закрыта, не пускаем в комнату 2
-      if(!door3Open && camera.position.z < -63 && Math.abs(camera.position.x) > 1) camera.position.z = oldZ;
     } else if(inRoom2) {
       // В комнате с обрывом
       if(camera.position.z > -65 || camera.position.z < -99) camera.position.z = oldZ;
@@ -363,4 +357,4 @@
   }
 </script>
 </body>
- </html>
+</html>
