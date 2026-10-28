@@ -294,15 +294,15 @@
     // Ограничения X
     if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
 
-    // Ограничения Z
+    // Ограничения Z (Физика стен)
+    // Если мы в коридоре 1 и дверь ЗАКРЫТА, не пускаем дальше -40
     if(!inside) {
       if(camera.position.z > 15 || camera.position.z < 1) camera.position.z = oldZ;
     } else if(!inRoom3 && !inRoom2) {
-      // В коридоре 1
-      if(camera.position.z > -1 || camera.position.z < -40) camera.position.z = oldZ;
+      if(camera.position.z > -1 || camera.position.z < -40) camera.position.z = oldZ; // ЖЕСТКАЯ СТЕНА
     } else if(inRoom3 && !inRoom2) {
       // В мастерской
-      if(camera.position.z > -40 || camera.position.z < -65) camera.position.z = oldZ;
+      if(camera.position.z > -40 || camera.position.z < -65) camera.position.z = oldZ; // ЖЕСТКАЯ СТЕНА
     } else if(inRoom2) {
       // В комнате с обрывом
       if(camera.position.z > -65 || camera.position.z < -99) camera.position.z = oldZ;
