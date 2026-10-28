@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime</title>
+<title>CreamTime v0.5</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
@@ -11,28 +11,28 @@
   
   .screen {
     position:fixed; top:0; left:0; width:100%; height:100%;
-    background:linear-gradient(135deg, #1a0a0a 0%, #0a0a0a 100%);
+    background:linear-gradient(135deg, #0a0a0a 0%, #000 100%);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     color:white; z-index:100;
   }
   .hidden { display:none !important; }
   
-  h1 { font-size:52px; color:#ff3333; letter-spacing:4px; text-shadow:0 0 20px rgba(255,51,51,0.6); margin-bottom:5px; }
-  .sub { color:#888; font-size:16px; margin-bottom:40px; letter-spacing:2px; }
+  h1 { font-size:52px; color:#ff3333; letter-spacing:4px; text-shadow:0 0 20px rgba(255,51,51,0.4); margin-bottom:5px; }
+  .sub { color:#666; font-size:16px; margin-bottom:40px; letter-spacing:2px; }
   .btn { padding:15px; font-size:20px; border:2px solid #ff3333; background:rgba(255,51,51,0.1); color:white; border-radius:10px; font-weight:bold; cursor:pointer; width:80%; max-width:300px; margin-bottom:15px; }
   .btn:active { transform:scale(0.95); background:#ff3333; color:#000; }
 
-  #hud { position:absolute; top:15px; left:15px; color:#fff; z-index:10; text-shadow:1px 1px 3px #000; font-size:18px; font-weight:bold; }
-  #task { position:absolute; top:45px; left:15px; color:#ffaa00; z-index:10; text-shadow:1px 1px 3px #000; font-size:16px; font-weight:bold; }
+  #hud { position:absolute; top:15px; left:15px; color:#ccc; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:18px; font-weight:bold; }
+  #task { position:absolute; top:45px; left:15px; color:#ffaa00; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:16px; font-weight:bold; }
   
-  #pauseBtn { position:absolute; top:15px; right:15px; padding:10px 15px; background:rgba(255,170,0,0.8); border:2px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; z-index:30; cursor:pointer; }
+  #pauseBtn { position:absolute; top:15px; right:15px; padding:10px 15px; background:rgba(255,170,0,0.8); border:2px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; display:none; z-index:30; cursor:pointer; }
   
-  #joy { position:absolute; bottom:80px; left:30px; width:140px; height:140px; z-index:20; }
-  .jbtn { position:absolute; width:45px; height:45px; background:rgba(255,255,255,0.2); border:2px solid #fff; border-radius:8px; color:#fff; font-size:20px; text-align:center; line-height:45px; user-select:none; }
+  #joy { position:absolute; bottom:80px; left:30px; width:140px; height:140px; z-index:20; display:none; }
+  .jbtn { position:absolute; width:45px; height:45px; background:rgba(255,255,255,0.15); border:2px solid #999; border-radius:8px; color:#ccc; font-size:20px; text-align:center; line-height:45px; user-select:none; }
   .jup { left:47px; top:0; } .jdown { left:47px; bottom:0; } .jleft { left:0; top:47px; } .jright { right:0; top:47px; }
   
-  #runBtn { position:absolute; bottom:90px; right:30px; width:80px; height:80px; border-radius:50%; background:rgba(255,51,51,0.4); border:3px solid #ff3333; color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; z-index:20; }
-  #look { position:absolute; top:0; right:0; width:50%; height:100%; z-index:15; }
+  #runBtn { position:absolute; bottom:90px; right:30px; width:80px; height:80px; border-radius:50%; background:rgba(255,51,51,0.3); border:3px solid #ff3333; color:#fff; font-weight:bold; display:none; align-items:center; justify-content:center; z-index:20; }
+  #look { position:absolute; top:0; right:0; width:50%; height:100%; z-index:15; display:none; }
   
   #actBtn { position:absolute; bottom:190px; left:50%; transform:translateX(-50%); padding:15px 30px; background:#ffaa00; color:#000; border:3px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; display:none; z-index:30; }
   
@@ -86,8 +86,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
   var scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x87CEEB); 
-  scene.fog = new THREE.Fog(0x87CEEB, 10, 50);
+  scene.background = new THREE.Color(0x050505); // Очень темный фон
+  scene.fog = new THREE.Fog(0x050505, 5, 30); // Густой туман
 
   var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
   camera.position.set(0, 1.6, 10); camera.rotation.order = 'YXZ';
@@ -95,37 +95,73 @@
   var renderer = new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(window.innerWidth, window.innerHeight); document.body.appendChild(renderer.domElement);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-  var sun = new THREE.DirectionalLight(0xffffff, 1); sun.position.set(10,20,10); scene.add(sun);
-  var light1 = new THREE.PointLight(0xffaa00, 1.5, 30); light1.position.set(0, 4, -20); scene.add(light1);
-  var light2 = new THREE.PointLight(0xff0000, 2, 30); light2.position.set(0, 4, -60); scene.add(light2); 
+  // --- СВЕТ (Мрачный) ---
+  scene.add(new THREE.AmbientLight(0x111111, 0.5)); // Очень тусклый общий свет
+  var sun = new THREE.DirectionalLight(0x333333, 0.5); sun.position.set(10,20,10); scene.add(sun);
+  var light1 = new THREE.PointLight(0xffaa00, 1.2, 20); light1.position.set(0, 4, -20); scene.add(light1);
+  var light2 = new THREE.PointLight(0xff0000, 1.5, 25); light2.position.set(0, 4, -60); scene.add(light2); 
 
-  // Улица
-  var grass = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshStandardMaterial({color:0x4CAF50}));
+  // --- ТЕКСТУРЫ (Генерируем программно) ---
+  // Плитка для пола
+  var canvasFloor = document.createElement('canvas');
+  canvasFloor.width = 128; canvasFloor.height = 128;
+  var ctxFloor = canvasFloor.getContext('2d');
+  ctxFloor.fillStyle = '#222'; ctxFloor.fillRect(0, 0, 128, 128);
+  ctxFloor.strokeStyle = '#111'; ctxFloor.lineWidth = 4; ctxFloor.strokeRect(0, 0, 128, 128);
+  ctxFloor.strokeStyle = '#333'; ctxFloor.lineWidth = 1; ctxFloor.strokeRect(2, 2, 124, 124);
+  var texFloor = new THREE.CanvasTexture(canvasFloor);
+  texFloor.wrapS = texFloor.wrapT = THREE.RepeatWrapping;
+  texFloor.repeat.set(10, 40); // Много плиток
+
+  // Бетон для стен
+  var canvasWall = document.createElement('canvas');
+  canvasWall.width = 128; canvasWall.height = 128;
+  var ctxWall = canvasWall.getContext('2d');
+  ctxWall.fillStyle = '#2a2a2a'; ctxWall.fillRect(0, 0, 128, 128);
+  for(var i=0; i<100; i++) {
+      ctxWall.fillStyle = Math.random() > 0.5 ? '#222' : '#333';
+      ctxWall.fillRect(Math.random()*128, Math.random()*128, 2, 2);
+  }
+  var texWall = new THREE.CanvasTexture(canvasWall);
+  texWall.wrapS = texWall.wrapT = THREE.RepeatWrapping;
+  texWall.repeat.set(10, 5);
+
+  var floorMat = new THREE.MeshStandardMaterial({ map: texFloor, roughness: 0.9 });
+  var wallMat = new THREE.MeshStandardMaterial({ map: texWall, roughness: 0.9 });
+  var doorMat = new THREE.MeshStandardMaterial({ color: 0x2a1a1a, roughness: 0.7 }); // Темное дерево
+
+  // --- УЛИЦА ---
+  var grass = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshStandardMaterial({color:0x1a3a1a})); // Темная трава
   grass.rotation.x = -Math.PI/2; grass.position.y = -0.1; scene.add(grass);
-  var road = new THREE.Mesh(new THREE.PlaneGeometry(6,100), new THREE.MeshStandardMaterial({color:0x555555}));
+  var road = new THREE.Mesh(new THREE.PlaneGeometry(6,100), new THREE.MeshStandardMaterial({color:0x222222}));
   road.rotation.x = -Math.PI/2; scene.add(road);
-  var factory = new THREE.Mesh(new THREE.BoxGeometry(12,8,10), new THREE.MeshStandardMaterial({color:0x8B4513}));
+  var factory = new THREE.Mesh(new THREE.BoxGeometry(12,8,10), new THREE.MeshStandardMaterial({color:0x3a1a1a})); // Темный кирпич
   factory.position.set(0,4,-5); scene.add(factory);
 
-  // Входная дверь (ВОЗВРАЩЕНА)
-  var frontDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x222222}));
+  // Входная дверь (Реалистичная)
+  var doorFrame = new THREE.Mesh(new THREE.BoxGeometry(2.4,4.4,0.1), new THREE.MeshStandardMaterial({color:0x111}));
+  doorFrame.position.set(0,2.2,0.05); scene.add(doorFrame);
+  var frontDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat);
   frontDoor.position.set(0,2,0.1); scene.add(frontDoor);
+  var doorHandle = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), new THREE.MeshStandardMaterial({color:0x888}));
+  doorHandle.position.set(0.7, 2, 0.25); scene.add(doorHandle);
 
-  // Коридор 1
-  var wallMat = new THREE.MeshStandardMaterial({color:0x555555});
-  var floorMat = new THREE.MeshStandardMaterial({color:0x2a2a2a});
+  // --- КОРИДОР 1 ---
   var floor1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), floorMat); floor1.rotation.x = -Math.PI/2; floor1.position.z = -20; scene.add(floor1);
   var lWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); lWall1.rotation.y = Math.PI/2; lWall1.position.set(-5,2.5,-20); scene.add(lWall1);
   var rWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); rWall1.rotation.y = -Math.PI/2; rWall1.position.set(5,2.5,-20); scene.add(rWall1);
   var ceil1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), wallMat); ceil1.rotation.x = Math.PI/2; ceil1.position.y = 5; ceil1.position.z = -20; scene.add(ceil1);
 
-  // Дверь в конце 1 коридора
-  var endDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x111111}));
+  // Дверь в конце 1 коридора (Реалистичная)
+  var endDoorFrame = new THREE.Mesh(new THREE.BoxGeometry(2.4,4.4,0.1), new THREE.MeshStandardMaterial({color:0x111}));
+  endDoorFrame.position.set(0,2.2,-39.9); scene.add(endDoorFrame);
+  var endDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat);
   endDoor.position.set(0,2,-39.8); scene.add(endDoor);
+  var endHandle = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), new THREE.MeshStandardMaterial({color:0x888}));
+  endHandle.position.set(0.7, 2, -39.65); scene.add(endHandle);
 
   // Стол и Записка
-  var boxMat = new THREE.MeshStandardMaterial({color:0x5c3a21});
+  var boxMat = new THREE.MeshStandardMaterial({color:0x2a1a1a});
   var table = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), boxMat); table.position.set(-2,1.0,-25); scene.add(table);
   [[-2.9,-24.6],[-1.1,-24.6],[-2.9,-25.4],[-1.1,-25.4]].forEach(function(p){
     var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), boxMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg);
@@ -141,19 +177,21 @@
   });
   var collected = 0;
 
-  // Комната 2 (Стены и Крыша)
+  // --- КОМНАТА 2 (Обрыв) ---
   var floor2a = new THREE.Mesh(new THREE.PlaneGeometry(10,10), floorMat); floor2a.rotation.x = -Math.PI/2; floor2a.position.set(0, 0, -50); scene.add(floor2a);
   var floor2b = new THREE.Mesh(new THREE.PlaneGeometry(10,10), floorMat); floor2b.rotation.x = -Math.PI/2; floor2b.position.set(0, 0, -70); scene.add(floor2b);
-  var bridge = new THREE.Mesh(new THREE.PlaneGeometry(3,10), new THREE.MeshStandardMaterial({color:0x8B4513}));
+  var bridge = new THREE.Mesh(new THREE.PlaneGeometry(3,10), new THREE.MeshStandardMaterial({color:0x3a2a2a}));
   bridge.rotation.x = -Math.PI/2; bridge.position.set(0, 0.1, -60); scene.add(bridge);
   
-  // Стены 2 комнаты (добавлены)
   var lWall2 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); lWall2.rotation.y = Math.PI/2; lWall2.position.set(-5,2.5,-60); scene.add(lWall2);
   var rWall2 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); rWall2.rotation.y = -Math.PI/2; rWall2.position.set(5,2.5,-60); scene.add(rWall2);
   var ceil2 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), wallMat); ceil2.rotation.x = Math.PI/2; ceil2.position.y = 5; ceil2.position.z = -60; scene.add(ceil2);
+  var bWall2 = new THREE.Mesh(new THREE.PlaneGeometry(10,5), wallMat); bWall2.position.set(0,2.5,-80); scene.add(bWall2);
 
   // Выход (зеленая дверь)
-  var exitDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x00ff00}));
+  var exitDoorFrame = new THREE.Mesh(new THREE.BoxGeometry(2.4,4.4,0.1), new THREE.MeshStandardMaterial({color:0x111}));
+  exitDoorFrame.position.set(0,2.2,-79.9); scene.add(exitDoorFrame);
+  var exitDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x00aa00}));
   exitDoor.position.set(0,2,-79.8); scene.add(exitDoor);
 
   // Монстр
@@ -169,7 +207,7 @@
   var speed=3, runSpeed=6, inside=false, won=false, cameraSens=0.005, mActive=false, inRoom2=false;
   var paused = false, noteRead = false, doorOpen = false;
 
-  // UI
+  // --- UI ---
   document.getElementById('startBtn').onclick = function() {
     document.getElementById('menu').classList.add('hidden');
     document.getElementById('hud').style.display = 'block';
@@ -222,15 +260,15 @@
   // Кнопка действия
   var actBtn = document.getElementById('actBtn');
   actBtn.onclick = function() {
-    if(!inside && camera.position.z>2 && camera.position.z<7) { // Расширенная зона входа
+    if(!inside && camera.position.z>2 && camera.position.z<7) { 
       inside=true; camera.position.set(0,1.6,-2); actBtn.style.display='none'; 
     }
     else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) {
       document.getElementById('modal').style.display='flex'; noteRead=true; actBtn.style.display='none';
     }
     else if(inside && collected===3 && !doorOpen && camera.position.z<-35) {
-      doorOpen=true; endDoor.position.z=-100; mActive=true; monster.visible=true; 
-      actBtn.style.display='none'; inRoom2 = true;
+      doorOpen=true; endDoor.position.z=-100; endDoorFrame.position.z=-100; endHandle.position.z=-100;
+      mActive=true; monster.visible=true; actBtn.style.display='none'; inRoom2 = true;
       document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
     }
   };
@@ -293,12 +331,10 @@
     // Монстр
     if(mActive && monster.visible){
       var mDir = new THREE.Vector3(camera.position.x-monster.position.x, 0, camera.position.z-monster.position.z).normalize();
-      // Он медленнее (2.5), чтобы можно было увернуться
       monster.position.x += mDir.x * 2.5 * delta;
       monster.position.z += mDir.z * 2.5 * delta;
       monster.lookAt(camera.position.x, 0, camera.position.z);
       
-      // Падение монстра
       if (monster.position.z < -53 && monster.position.z > -67) {
         if (monster.position.x < -1.5 || monster.position.x > 1.5) {
             monster.visible = false; mActive = false;
@@ -307,7 +343,6 @@
         }
       }
       
-      // Смерть
       if(Math.hypot(camera.position.x-monster.position.x, camera.position.z-monster.position.z)<1.5) {
         alert("Вас поймал Мороженосчик!"); location.reload();
       }
@@ -316,4 +351,4 @@
   }
 </script>
 </body>
- </html>
+</html>
