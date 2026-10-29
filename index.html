@@ -172,14 +172,15 @@
   key.position.set(3, 1.2, -55); scene.add(key);
   var keyTaken = false;
 
-  // Статуя
+  // Статуя (поставлена в центр комнаты, а не в стену)
   var statue = new THREE.Group();
   var sBody = new THREE.Mesh(new THREE.BoxGeometry(1,2,1), new THREE.MeshStandardMaterial({color:0xeeeeee})); sBody.position.y=1; statue.add(sBody);
   var sHead = new THREE.Mesh(new THREE.BoxGeometry(1.2,1,1.2), new THREE.MeshStandardMaterial({color:0xff9999})); sHead.position.y=2.5; statue.add(sHead);
   var eyeMat = new THREE.MeshStandardMaterial({color:0});
   var e1 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e1.position.set(-0.3,2.6,0.61); statue.add(e1);
   var e2 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e2.position.set(0.3,2.6,0.61); statue.add(e2);
-  statue.position.set(-4,0,-45); scene.add(statue);
+  statue.position.set(0, 0, -50); // Теперь в центре, а не в стене
+  scene.add(statue);
 
   // КОМНАТА 3 (Фабрика, от -65 до -95)
   var floor3 = new THREE.Mesh(new THREE.PlaneGeometry(10,30), floorMat); floor3.rotation.x = -Math.PI/2; floor3.position.z = -80; scene.add(floor3);
@@ -387,11 +388,11 @@
       document.getElementById('win').style.display='flex'; 
     }
 
-    // Монстр
+    // Монстр (замедлен до 2.0)
     if(mActive && monster.visible){
       var mDir = new THREE.Vector3(camera.position.x-monster.position.x, 0, camera.position.z-monster.position.z).normalize();
-      monster.position.x += mDir.x * 2.5 * delta;
-      monster.position.z += mDir.z * 2.5 * delta;
+      monster.position.x += mDir.x * 2.0 * delta;
+      monster.position.z += mDir.z * 2.0 * delta;
       monster.lookAt(camera.position.x, 0, camera.position.z);
       
       if (monster.position.z < -117 && monster.position.z > -127) {
