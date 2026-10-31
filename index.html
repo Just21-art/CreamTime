@@ -8,61 +8,46 @@
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
   canvas { display:block; }
-  
-  .screen {
-    position:fixed; top:0; left:0; width:100%; height:100%;
-    background:linear-gradient(135deg, #0a0a0a 0%, #000 100%);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    color:white; z-index:100;
-  }
+  .screen { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#0a0a0a,#000); display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; z-index:100; }
   .hidden { display:none !important; }
-  
   h1 { font-size:52px; color:#ff3333; letter-spacing:4px; text-shadow:0 0 20px rgba(255,51,51,0.4); margin-bottom:5px; }
   .sub { color:#666; font-size:16px; margin-bottom:40px; letter-spacing:2px; }
   .btn { padding:15px; font-size:20px; border:2px solid #ff3333; background:rgba(255,51,51,0.1); color:white; border-radius:10px; font-weight:bold; cursor:pointer; width:80%; max-width:300px; margin-bottom:15px; }
   .btn:active { transform:scale(0.95); background:#ff3333; color:#000; }
-  .btn-cam { border-color: #00ff00; background: rgba(0, 255, 0, 0.1); }
-  .btn-cam:active { background: #00ff00; }
-
+  .btn-cam { border-color:#00ff00; background:rgba(0,255,0,0.1); }
+  .btn-cam:active { background:#00ff00; }
   #hud { position:absolute; top:15px; left:15px; color:#ccc; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:18px; font-weight:bold; }
   #task { position:absolute; top:45px; left:15px; color:#ffaa00; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:16px; font-weight:bold; }
-  
   #pauseBtn { position:absolute; top:15px; right:15px; padding:10px 15px; background:rgba(255,170,0,0.8); border:2px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; display:none; z-index:30; cursor:pointer; }
-  
   #joy { position:absolute; bottom:80px; left:30px; width:140px; height:140px; z-index:20; display:none; }
   .jbtn { position:absolute; width:45px; height:45px; background:rgba(255,255,255,0.15); border:2px solid #999; border-radius:8px; color:#ccc; font-size:20px; text-align:center; line-height:45px; user-select:none; }
   .jup { left:47px; top:0; } .jdown { left:47px; bottom:0; } .jleft { left:0; top:47px; } .jright { right:0; top:47px; }
-  
   #runBtn { position:absolute; bottom:90px; right:30px; width:80px; height:80px; border-radius:50%; background:rgba(255,51,51,0.3); border:3px solid #ff3333; color:#fff; font-weight:bold; display:none; align-items:center; justify-content:center; z-index:20; }
   #look { position:absolute; top:0; right:0; width:50%; height:100%; z-index:15; display:none; }
-  
   #actBtn { position:absolute; bottom:190px; left:50%; transform:translateX(-50%); padding:15px 30px; background:#ffaa00; color:#000; border:3px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; display:none; z-index:30; }
-  
   #modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; align-items:center; justify-content:center; z-index:50; flex-direction:column; }
   .paper { background:#e8d5a5; color:#222; padding:25px; border-radius:5px; max-width:80%; font-family:monospace; font-size:16px; }
-  
   #win { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; color:#fff; }
+  /* Кнопки для свободного полета (вверх/вниз) */
+  #flyBtns { position:absolute; bottom: 30px; right: 130px; display: none; flex-direction: column; gap: 10px; z-index: 25; }
+  .flybtn { width: 50px; height: 50px; background: rgba(0, 255, 0, 0.3); border: 2px solid #00ff00; border-radius: 10px; color: white; font-size: 24px; text-align: center; line-height: 50px; user-select: none; }
 </style>
 </head>
 <body>
-
 <div id="menu" class="screen">
   <h1>CREAMTIME</h1>
   <p class="sub">ЧАСТЬ 1: ЗАБРОШЕННАЯ ФАБРИКА</p>
   <button class="btn" id="startBtn">▶ ИГРАТЬ</button>
   <button class="btn btn-cam" id="camBtn">🎥 СВОБОДНЫЙ ПОЛЕТ</button>
 </div>
-
 <div id="pauseScreen" class="screen hidden">
   <h1 style="color:#ffaa00; margin-bottom:30px;">ПАУЗА</h1>
   <button class="btn" id="resumeBtn">▶ ПРОДОЛЖИТЬ</button>
   <button class="btn" id="exitBtn">🏠 В МЕНЮ</button>
 </div>
-
 <div id="hud">Глава 1: Заброшенная фабрика</div>
 <div id="task">Предохранители: 0/3</div>
 <button id="pauseBtn">⏸</button>
-
 <div id="look"></div>
 <div id="joy">
   <div class="jbtn jup" data-dir="up">▲</div>
@@ -70,9 +55,12 @@
   <div class="jbtn jleft" data-dir="left">◀</div>
   <div class="jbtn jright" data-dir="right">▶</div>
 </div>
+<div id="flyBtns">
+  <div class="flybtn" id="flyUp">▲</div>
+  <div class="flybtn" id="flyDown">▼</div>
+</div>
 <div id="runBtn">БЕГ</div>
 <button id="actBtn">ДЕЙСТВИЕ</button>
-
 <div id="modal">
   <div class="paper">
     <h3>ЗАПИСКА</h3>
@@ -80,12 +68,10 @@
   </div>
   <button id="closeMod" style="margin-top:20px; padding:10px 20px; background:#ff3333; color:#fff; border:none; border-radius:5px;">ЗАКРЫТЬ</button>
 </div>
-
 <div id="win">
   <h1 style="color:#ffaa00; font-size:32px; margin-bottom:15px;">ГЛАВА 1 ПРОЙДЕНА!</h1>
   <button onclick="location.reload()" style="padding:12px 30px; background:#ffaa00; border:none; font-weight:bold; border-radius:10px; font-size:18px;">В МЕНЮ</button>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
   var scene = new THREE.Scene();
@@ -98,9 +84,11 @@
 
   var moonLight = new THREE.AmbientLight(0x444466, 0.6); scene.add(moonLight);
   var lampLight = new THREE.PointLight(0xffaa00, 2, 15); lampLight.position.set(0, 4, 2); scene.add(lampLight);
-  var light1 = new THREE.PointLight(0xffaa00, 1, 25); light1.position.set(0, 4, -20); scene.add(light1);
-  var light2 = new THREE.PointLight(0xff0000, 1.5, 25); light2.position.set(0, 4, -50); scene.add(light2);
-  var light3 = new THREE.PointLight(0xffffff, 1, 25); light3.position.set(0, 4, -70); scene.add(light3);
+  var light1 = new THREE.PointLight(0xffaa00, 1.5, 25); light1.position.set(0, 4, -20); scene.add(light1);
+  var light2 = new THREE.PointLight(0xff0000, 2, 25); light2.position.set(0, 4, -50); scene.add(light2);
+  var light3 = new THREE.PointLight(0xffffff, 1.5, 25); light3.position.set(0, 4, -75); scene.add(light3);
+  var light4 = new THREE.PointLight(0xff0000, 2, 30); light4.position.set(0, 4, -105); scene.add(light4); 
+  var light5 = new THREE.PointLight(0xffffff, 1.5, 20); light5.position.set(0, 4, -125); scene.add(light5); 
 
   var canvasFloor = document.createElement('canvas'); canvasFloor.width = 128; canvasFloor.height = 128;
   var ctxFloor = canvasFloor.getContext('2d'); ctxFloor.fillStyle = '#222'; ctxFloor.fillRect(0, 0, 128, 128); ctxFloor.strokeStyle = '#111'; ctxFloor.lineWidth = 4; ctxFloor.strokeRect(0, 0, 128, 128);
@@ -125,6 +113,9 @@
 
   var doorFrame = new THREE.Mesh(new THREE.BoxGeometry(2.4,4.4,0.1), new THREE.MeshStandardMaterial({color:0x111})); doorFrame.position.set(0,2.2,0.05); scene.add(doorFrame);
   var frontDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); frontDoor.position.set(0,2,0.1); scene.add(frontDoor);
+  // Добавляем ручку на входную дверь
+  var handle = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), new THREE.MeshStandardMaterial({color:0x888}));
+  handle.position.set(0.7, 2, 0.25); scene.add(handle);
 
   var floor1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), floorMat); floor1.rotation.x = -Math.PI/2; floor1.position.z = -20; scene.add(floor1);
   var lWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); lWall1.rotation.y = Math.PI/2; lWall1.position.set(-5,2.5,-20); scene.add(lWall1);
@@ -162,7 +153,6 @@
   var key = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.5), new THREE.MeshStandardMaterial({color:0xffd700, emissive:0x333300}));
   key.position.set(3.5, 1.2, -62); scene.add(key);
   var keyTaken = false;
-
   var statue = new THREE.Group();
   var sBody = new THREE.Mesh(new THREE.BoxGeometry(1,2,1), new THREE.MeshStandardMaterial({color:0xeeeeee})); sBody.position.y=1; statue.add(sBody);
   var sHead = new THREE.Mesh(new THREE.BoxGeometry(1.2,1,1.2), new THREE.MeshStandardMaterial({color:0xff9999})); sHead.position.y=2.5; statue.add(sHead);
@@ -217,6 +207,15 @@
   var speed=3, runSpeed=6, inside=false, won=false, cameraSens=0.005, mActive=false;
   var paused = false, noteRead = false, doorOpen = false;
   var room = 1, toyCreated = false, toyScanned = false, isSpectator = false;
+  var flyUp = false, flyDown = false; // Для полета вверх/вниз
+
+  // Управление полетом
+  var fUp = document.getElementById('flyUp');
+  var fDown = document.getElementById('flyDown');
+  if(fUp) fUp.addEventListener('touchstart', function(e){ e.preventDefault(); flyUp = true; }, {passive:false});
+  if(fUp) fUp.addEventListener('touchend', function(e){ e.preventDefault(); flyUp = false; }, {passive:false});
+  if(fDown) fDown.addEventListener('touchstart', function(e){ e.preventDefault(); flyDown = true; }, {passive:false});
+  if(fDown) fDown.addEventListener('touchend', function(e){ e.preventDefault(); flyDown = false; }, {passive:false});
 
   document.getElementById('startBtn').onclick = function() {
     isSpectator = false;
@@ -227,6 +226,7 @@
     document.getElementById('joy').style.display = 'block';
     document.getElementById('look').style.display = 'block';
     document.getElementById('runBtn').style.display = 'flex';
+    document.getElementById('flyBtns').style.display = 'none';
     animate();
   };
 
@@ -239,7 +239,8 @@
     document.getElementById('joy').style.display = 'block';
     document.getElementById('look').style.display = 'block';
     document.getElementById('runBtn').style.display = 'flex';
-    camera.position.set(0, 3, -40);
+    document.getElementById('flyBtns').style.display = 'flex'; // Включаем кнопки полета
+    camera.position.set(0, 3, -40); // Ставим камеру в комнату 2
     animate();
   };
 
@@ -325,6 +326,14 @@
     if(moveL){ camera.position.x-=right.x*sp*delta; camera.position.z-=right.z*sp*delta; }
     if(moveR){ camera.position.x+=right.x*sp*delta; camera.position.z+=right.z*sp*delta; }
 
+    // Свободный полет вверх/вниз
+    if(isSpectator) {
+      if(flyUp) camera.position.y += sp * delta * 2;
+      if(flyDown) camera.position.y -= sp * delta * 2;
+      if(camera.position.y < 0.5) camera.position.y = 0.5; // Не улетать под пол
+      if(camera.position.y > 15) camera.position.y = 15;  // Не улетать в космос
+    }
+
     if(!isSpectator){
       if(camera.position.z > 15 || camera.position.z < -139) camera.position.z = oldZ;
       
@@ -397,4 +406,3 @@
 </script>
 </body>
 </html>
-      
