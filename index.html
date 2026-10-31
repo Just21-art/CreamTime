@@ -344,103 +344,96 @@
       monster.visible = true;
     }
   };
-document.getElementById('closeMod').onclick = function() { document.getElementById('modal').style.display = 'none'; };
+ document.getElementById('closeMod').onclick = function() { document.getElementById('modal').style.display = 'none'; };
 
 var clock = new THREE.Clock();
 
 function animate() {
-    if(won) return;
-    requestAnimationFrame(animate);
-    if(paused) return;
+  if(won) return;
+  requestAnimationFrame(animate);
+  if(paused) return;
+  
+  var delta = clock.getDelta();
+  var sp = isRun ? runSpeed : speed;
+  var dir = new THREE.Vector3(); camera.getWorldDirection(dir);
+  var right = new THREE.Vector3(); right.crossVectors(camera.up, dir).normalize();
+
+  var oldX = camera.position.x; var oldZ = camera.position.z;
+
+  if(moveF){ camera.position.x+=dir.x*sp*delta; camera.position.z+=dir.z*sp*delta; }
+  if(moveB){ camera.position.x-=dir.x*sp*delta; camera.position.z-=dir.z*sp*delta; }
+  if(moveL){ camera.position.x-=right.x*sp*delta; camera.position.z-=right.z*sp*delta; }
+  if(moveR){ camera.position.x+=right.x*sp*delta; camera.position.z+=right.z*sp*delta; }
+
+  if(!isSpectator){
+    if(camera.position.z > 15 || camera.position.z < -139) camera.position.z = oldZ;
     
-    var delta = clock.getDelta();
-    var sp = isRun ? runSpeed : speed;
-    var dir = new THREE.Vector3(); camera.getWorldDirection(dir);
-    var right = new THREE.Vector3(); right.crossVectors(camera.up, dir).normalize();
-
-    var oldX = camera.position.x; var oldZ = camera.position.z;
-
-    if(moveF){ camera.position.x+=dir.x*sp*delta; camera.position.z+=dir.z*sp*delta; }
-    if(moveB){ camera.position.x-=dir.x*sp*delta; camera.position.z-=dir.z*sp*delta; }
-    if(moveL){ camera.position.x-=right.x*sp*delta; camera.position.z-=right.z*sp*delta; }
-    if(moveR){ camera.position.x+=right.x*sp*delta; camera.position.z+=right.z*sp*delta; }
-
-    if(!isSpectator){
-      // Ограничения
-      if(camera.position.z > 15 || camera.position.z < -139) camera.position.z = oldZ;
-      
-      if(room===1 || room===2 || room===3) {
-        if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
-      } else if(room===4) {
-        if(camera.position.x > 0.5 || camera.position.x < -0.5) camera.position.x = oldX;
-      } else if(room===5) {
-        if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
-      }
-
-      // Обрыв
-      if(room===5 && camera.position.z < -117 && camera.position.z > -127) {
-        if (camera.position.x < -1.5 || camera.position.x > 1.5) { alert('Вы упали в обрыв!'); location.reload(); }
-      }
+    if(room===1 || room===2 || room===3) {
+      if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
+    } else if(room===4) {
+      if(camera.position.x > 0.5 || camera.position.x < -0.5) camera.position.x = oldX;
+    } else if(room===5) {
+      if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
     }
 
-    // Кнопки UI
-    if(!isSpectator){
-      if(!inside && camera.position.z<7 && camera.position.z>2) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
-      else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) { actBtn.innerText="📜 ПРОЧИТАТЬ"; actBtn.style.display='block'; }
-      else if(inside && collected===3 && !doorOpen && camera.position.z<-35) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
-      else if(room===2 && !keyTaken && Math.hypot(camera.position.x-3.5, camera.position.z+62)<2.5) { actBtn.innerText="🔑 ВЗЯТЬ КЛЮЧ"; actBtn.style.display='block'; }
-      else if(room===2 && keyTaken && camera.position.z<-63) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
-      else if(room===3 && !toyCreated && Math.hypot(camera.position.x, camera.position.z+75)<2.5) { actBtn.innerText="⚙ СОЗДАТЬ ИГРУШКУ"; actBtn.style.display='block'; }
-      else if(room===3 && toyCreated && !toyScanned && Math.hypot(camera.position.x+3, camera.position.z+85)<2.5) { actBtn.innerText="🔍 ОТСКАНИРОВАТЬ"; actBtn.style.display='block'; }
-      else if(room===3 && toyScanned && camera.position.z<-93) { actBtn.innerText="🚪 В ВЕНТИЛЯЦИЮ"; actBtn.style.display='block'; }
-      else { actBtn.style.display='none'; }
-    } else {
-      actBtn.style.display = 'none';
+    if(room===5 && camera.position.z < -117 && camera.position.z > -127) {
+      if (camera.position.x < -1.5 || camera.position.x > 1.5) { alert('Вы упали в обрыв!'); location.reload(); }
     }
-
-    // Сбор
-    if(!isSpectator && inside && room===1 && collected<3) {
-      for(var i=fuses.length-1; i>=0; i--){
-        var f = fuses[i];
-        if(Math.hypot(camera.position.x-f.position.x, camera.position.z-f.position.z)<1.5) {
-          scene.remove(f); fuses.splice(i,1); collected++;
-          document.getElementById('task').innerText = "Предохранители: " + collected + "/3";
-        }
-      }
-    }
-
-    // Переход в комнату 5
-    if(!isSpectator && room===4 && camera.position.z < -105) {
-      room = 5; camera.position.set(0, 1.6, -108);
-      document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
-    }
-
-    // Финиш
-    if(!isSpectator && room===5 && camera.position.z < -138) { 
-      won = true; 
-      document.getElementById('win').style.display='flex'; 
-    }
-
-    // Монстр
-    if(!isSpectator && mActive && monster.visible){
-      var mDir = new THREE.Vector3(camera.position.x-monster.position.x, 0, camera.position.z-monster.position.z).normalize();
-      monster.position.x += mDir.x * 2.0 * delta;
-      monster.position.z += mDir.z * 2.0 * delta;
-      monster.lookAt(camera.position.x, 0, camera.position.z);
-      
-      if (monster.position.z < -117 && monster.position.z > -127) {
-        if (monster.position.x < -1.5 || monster.position.x > 1.5) {
-            monster.visible = false; mActive = false;
-            document.getElementById('task').innerText = "Мороженосчик упал! Бегите к выходу!";
-            alert("Вы сбросили Мороженосчика в обрыв!");
-        }
-      }
-      if(Math.hypot(camera.position.x-monster.position.x, camera.position.z-monster.position.z)<1.5) {
-        alert("Вас поймал Мороженосчик!"); location.reload();
-      }
-    }
-    renderer.render(scene, camera);
   }
+
+  if(!isSpectator){
+    if(!inside && camera.position.z<7 && camera.position.z>2) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
+    else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) { actBtn.innerText="📜 ПРОЧИТАТЬ"; actBtn.style.display='block'; }
+    else if(inside && collected===3 && !doorOpen && camera.position.z<-35) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
+    else if(room===2 && !keyTaken && Math.hypot(camera.position.x-3.5, camera.position.z+62)<2.5) { actBtn.innerText="🔑 ВЗЯТЬ КЛЮЧ"; actBtn.style.display='block'; }
+    else if(room===2 && keyTaken && camera.position.z<-63) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
+    else if(room===3 && !toyCreated && Math.hypot(camera.position.x, camera.position.z+75)<2.5) { actBtn.innerText="⚙ СОЗДАТЬ ИГРУШКУ"; actBtn.style.display='block'; }
+    else if(room===3 && toyCreated && !toyScanned && Math.hypot(camera.position.x+3, camera.position.z+85)<2.5) { actBtn.innerText="🔍 ОТСКАНИРОВАТЬ"; actBtn.style.display='block'; }
+    else if(room===3 && toyScanned && camera.position.z<-93) { actBtn.innerText="🚪 В ВЕНТИЛЯЦИЮ"; actBtn.style.display='block'; }
+    else { actBtn.style.display='none'; }
+  } else {
+    actBtn.style.display = 'none';
+  }
+
+  if(!isSpectator && inside && room===1 && collected<3) {
+    for(var i=fuses.length-1; i>=0; i--){
+      var f = fuses[i];
+      if(Math.hypot(camera.position.x-f.position.x, camera.position.z-f.position.z)<1.5) {
+        scene.remove(f); fuses.splice(i,1); collected++;
+        document.getElementById('task').innerText = "Предохранители: " + collected + "/3";
+      }
+    }
+  }
+
+  if(!isSpectator && room===4 && camera.position.z < -105) {
+    room = 5; camera.position.set(0, 1.6, -108);
+    document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
+  }
+
+  if(!isSpectator && room===5 && camera.position.z < -138) { 
+    won = true; 
+    document.getElementById('win').style.display='flex'; 
+  }
+
+  if(!isSpectator && mActive && monster.visible){
+    var mDir = new THREE.Vector3(camera.position.x-monster.position.x, 0, camera.position.z-monster.position.z).normalize();
+    monster.position.x += mDir.x * 2.0 * delta;
+    monster.position.z += mDir.z * 2.0 * delta;
+    monster.lookAt(camera.position.x, 0, camera.position.z);
+    
+    if (monster.position.z < -117 && monster.position.z > -127) {
+      if (monster.position.x < -1.5 || monster.position.x > 1.5) {
+          monster.visible = false; mActive = false;
+          document.getElementById('task').innerText = "Мороженосчик упал! Бегите к выходу!";
+          alert("Вы сбросили Мороженосчика в обрыв!");
+      }
+    }
+    if(Math.hypot(camera.position.x-monster.position.x, camera.position.z-monster.position.z)<1.5) {
+      alert("Вас поймал Мороженосчик!"); location.reload();
+    }
+  }
+  renderer.render(scene, camera);
+}
 </script>
 </body>
 </html>
