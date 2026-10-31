@@ -344,12 +344,11 @@
       monster.visible = true;
     }
   };
+document.getElementById('closeMod').onclick = function() { document.getElementById('modal').style.display = 'none'; };
 
-  document.getElementById('closeMod').onclick = function() { document.getElementById('modal').style.display = 'none'; };
+var clock = new THREE.Clock();
 
-  var clock = new THREE.Clock();
-
-  function animate() {
+function animate() {
     if(won) return;
     requestAnimationFrame(animate);
     if(paused) return;
