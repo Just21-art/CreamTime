@@ -132,37 +132,26 @@
   [[-3.5,-10],[3.5,-15],[-3.5,-30]].forEach(function(p){ var f = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.4,0.4), fuseMat); f.position.set(p[0],0.5,p[1]); scene.add(f); fuses.push(f); });
   var collected = 0;
 
-  // --- НОВЫЕ ОБЪЕКТЫ В 1 КОМНАТЕ (Охрана) ---
-  // Белая стена с надписью
+  // Охрана в 1 комнате
   var whiteWall = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 0.2), new THREE.MeshStandardMaterial({color: 0xdddddd}));
-  whiteWall.position.set(0, 2.5, -34);
-  scene.add(whiteWall);
-  
-  // Текст WELCOME
+  whiteWall.position.set(0, 2.5, -34); scene.add(whiteWall);
   var canvasText = document.createElement('canvas'); canvasText.width = 512; canvasText.height = 128;
   var ctxText = canvasText.getContext('2d'); ctxText.fillStyle = '#ffffff'; ctxText.fillRect(0,0,512,128); 
   ctxText.fillStyle = '#000000'; ctxText.font = 'bold 80px Arial'; ctxText.textAlign = 'center'; ctxText.fillText('WELCOME', 256, 90);
   var texText = new THREE.CanvasTexture(canvasText);
   var textMesh = new THREE.Mesh(new THREE.PlaneGeometry(3.5, 0.8), new THREE.MeshStandardMaterial({map: texText}));
-  textMesh.position.set(0, 3.5, -33.85); 
-  scene.add(textMesh);
-
-  // Стол охраны
+  textMesh.position.set(0, 3.5, -33.85); scene.add(textMesh);
   var desk = new THREE.Mesh(new THREE.BoxGeometry(3, 1.2, 1), new THREE.MeshStandardMaterial({color: 0x4a3a2a}));
   desk.position.set(0, 0.6, -32.5); scene.add(desk);
-  
-  // Стул (повернут лицом к выходу)
-var chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({color: 0x222222}));
-chairSeat.position.set(0, 0.6, -33.5); scene.add(chairSeat);
-var chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), new THREE.MeshStandardMaterial({color: 0x222222}));
-chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack); // Задняя спинка теперь ближе к стене
-// Ножки стула
-[[-0.35,-33.15],[-0.35,-33.85],[0.35,-33.15],[0.35,-33.85]].forEach(function(p){
-  var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.6,0.1), new THREE.MeshStandardMaterial({color:0x222222}));
-  leg.position.set(p[0], 0.3, p[1]); scene.add(leg);
-});
-
-  var floor2 = new THREE.Mesh(new THREE.PlaneGeometry(10,25), floorMat); floor2.rotation.x = -Math.PI/2; floor2.position.z = -52.5; scene.add(floor2);
+  var chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({color: 0x222222}));
+  chairSeat.position.set(0, 0.6, -33.5); scene.add(chairSeat);
+  var chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), new THREE.MeshStandardMaterial({color: 0x222222}));
+  chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack);
+  [[-0.35,-33.15],[-0.35,-33.85],[0.35,-33.15],[0.35,-33.85]].forEach(function(p){
+    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.6,0.1), new THREE.MeshStandardMaterial({color:0x222222}));
+    leg.position.set(p[0], 0.3, p[1]); scene.add(leg);
+  });
+ var floor2 = new THREE.Mesh(new THREE.PlaneGeometry(10,25), floorMat); floor2.rotation.x = -Math.PI/2; floor2.position.z = -52.5; scene.add(floor2);
   var lWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); lWall2.rotation.y = Math.PI/2; lWall2.position.set(-5,2.5,-52.5); scene.add(lWall2);
   var rWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); rWall2.rotation.y = -Math.PI/2; rWall2.position.set(5,2.5,-52.5); scene.add(rWall2);
   var ceil2 = new THREE.Mesh(new THREE.PlaneGeometry(10,25), wallMat); ceil2.rotation.x = Math.PI/2; ceil2.position.y = 5; ceil2.position.z = -52.5; scene.add(ceil2);
@@ -181,7 +170,8 @@ chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack); // Задняя с�
   var key = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.5), new THREE.MeshStandardMaterial({color:0xffd700, emissive:0x333300}));
   key.position.set(3.5, 1.2, -62); scene.add(key);
   var keyTaken = false;
- var statue = new THREE.Group();
+
+  var statue = new THREE.Group();
   var sBody = new THREE.Mesh(new THREE.BoxGeometry(1,2,1), new THREE.MeshStandardMaterial({color:0xeeeeee})); sBody.position.y=1; statue.add(sBody);
   var sHead = new THREE.Mesh(new THREE.BoxGeometry(1.2,1,1.2), new THREE.MeshStandardMaterial({color:0xff9999})); sHead.position.y=2.5; statue.add(sHead);
   var eyeMat = new THREE.MeshStandardMaterial({color:0});
@@ -195,23 +185,18 @@ chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack); // Задняя с�
   var rWall3 = new THREE.Mesh(new THREE.PlaneGeometry(30,5), wallMat); rWall3.rotation.y = -Math.PI/2; rWall3.position.set(5,2.5,-80); scene.add(rWall3);
   var ceil3 = new THREE.Mesh(new THREE.PlaneGeometry(10,30), wallMat); ceil3.rotation.x = Math.PI/2; ceil3.position.y = 5; ceil3.position.z = -80; scene.add(ceil3);
 
-  // Главный станок (оставляем как есть)
   var machineBase = new THREE.Mesh(new THREE.BoxGeometry(2,1,1), new THREE.MeshStandardMaterial({color:0x444})); machineBase.position.set(0, 0.5, -75); scene.add(machineBase);
   var machineTop = new THREE.Mesh(new THREE.BoxGeometry(1.5,1,0.5), new THREE.MeshStandardMaterial({color:0x666})); machineTop.position.set(0, 1.5, -75); scene.add(machineTop);
   
-  // --- НОВЫЕ СТАНКИ ПО УГЛАМ 3 КОМНАТЫ ---
   function makeMachine(x, z) {
     var base = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1, 1), new THREE.MeshStandardMaterial({color: 0x333333}));
     base.position.set(x, 0.5, z); scene.add(base);
     var top = new THREE.Mesh(new THREE.BoxGeometry(1, 0.8, 0.5), new THREE.MeshStandardMaterial({color: 0x555555}));
     top.position.set(x, 1.4, z); scene.add(top);
     var pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5, 8), new THREE.MeshStandardMaterial({color: 0x666666}));
-    pipe.position.set(x + 0.5, 2.5, z); scene.add(pipe); // Труба вверх
+    pipe.position.set(x + 0.5, 2.5, z); scene.add(pipe);
   }
-  makeMachine(-3.5, -70);
-  makeMachine(3.5, -70);
-  makeMachine(-3.5, -90);
-  makeMachine(3.5, -90);
+  makeMachine(-3.5, -70); makeMachine(3.5, -70); makeMachine(-3.5, -90); makeMachine(3.5, -90);
 
   var scanTable = new THREE.Mesh(new THREE.BoxGeometry(1.5,0.1,1), boxMat); scanTable.position.set(-3, 1.0, -85); scene.add(scanTable);
   [[-3.6,-84.6],[-2.4,-84.6],[-3.6,-85.4],[-2.4,-85.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), boxMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
@@ -223,13 +208,27 @@ chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack); // Задняя с�
   var wall3b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall3b.position.set(3,2.5,-95); scene.add(wall3b);
   var door3 = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); door3.position.set(0,2,-95); scene.add(door3);
 
-  var floorVent = new THREE.Mesh(new THREE.PlaneGeometry(2,10), floorMat); floorVent.rotation.x = -Math.PI/2; floorVent.position.z = -100; scene.add(floorVent);
-  var lWallVent = new THREE.Mesh(new THREE.PlaneGeometry(10,5), wallMat); lWallVent.rotation.y = Math.PI/2; lWallVent.position.set(-1,2.5,-100); scene.add(lWallVent);
-  var rWallVent = new THREE.Mesh(new THREE.PlaneGeometry(10,5), wallMat); rWallVent.rotation.y = -Math.PI/2; rWallVent.position.set(1,2.5,-100); scene.add(rWallVent);
-  var ceilVent = new THREE.Mesh(new THREE.PlaneGeometry(2,10), wallMat); ceilVent.rotation.x = Math.PI/2; ceilVent.position.y = 5; ceilVent.position.z = -100; scene.add(ceilVent);
-  
-  var ventDoor = new THREE.Mesh(new THREE.BoxGeometry(1.2,4,0.2), doorMat); ventDoor.position.set(0,2,-105); scene.add(ventDoor);
+  // --- НОВАЯ ВЕНТИЛЯЦИЯ (с изгибами) ---
+  var ventFloor1 = new THREE.Mesh(new THREE.PlaneGeometry(3, 4), floorMat); ventFloor1.rotation.x = -Math.PI/2; ventFloor1.position.set(1.5, 0, -97); scene.add(ventFloor1);
+  var ventCeil1 = new THREE.Mesh(new THREE.PlaneGeometry(3, 4), wallMat); ventCeil1.rotation.x = Math.PI/2; ventCeil1.position.set(1.5, 2.5, -97); scene.add(ventCeil1);
+  var ventWallL1 = new THREE.Mesh(new THREE.PlaneGeometry(4, 2.5), wallMat); ventWallL1.rotation.y = Math.PI/2; ventWallL1.position.set(0, 1.25, -97); scene.add(ventWallL1);
+  var ventWallR1 = new THREE.Mesh(new THREE.PlaneGeometry(4, 2.5), wallMat); ventWallR1.rotation.y = -Math.PI/2; ventWallR1.position.set(3, 1.25, -97); scene.add(ventWallR1);
 
+  var ventFloor2 = new THREE.Mesh(new THREE.PlaneGeometry(4, 3), floorMat); ventFloor2.rotation.x = -Math.PI/2; ventFloor2.position.set(0, 0, -99.5); scene.add(ventFloor2);
+  var ventCeil2 = new THREE.Mesh(new THREE.PlaneGeometry(4, 3), wallMat); ventCeil2.rotation.x = Math.PI/2; ventCeil2.position.set(0, 2.5, -99.5); scene.add(ventCeil2);
+  var ventWallFront2 = new THREE.Mesh(new THREE.PlaneGeometry(3, 2.5), wallMat); ventWallFront2.position.set(0, 1.25, -101); scene.add(ventWallFront2);
+
+  var ventFloor3 = new THREE.Mesh(new THREE.PlaneGeometry(3, 8), floorMat); ventFloor3.rotation.x = -Math.PI/2; ventFloor3.position.set(-1.5, 0, -104); scene.add(ventFloor3);
+  var ventCeil3 = new THREE.Mesh(new THREE.PlaneGeometry(3, 8), wallMat); ventCeil3.rotation.x = Math.PI/2; ventCeil3.position.set(-1.5, 2.5, -104); scene.add(ventCeil3);
+  var ventWallL3 = new THREE.Mesh(new THREE.PlaneGeometry(8, 2.5), wallMat); ventWallL3.rotation.y = Math.PI/2; ventWallL3.position.set(-3, 1.25, -104); scene.add(ventWallL3);
+  var ventWallR3 = new THREE.Mesh(new THREE.PlaneGeometry(8, 2.5), wallMat); ventWallR3.rotation.y = -Math.PI/2; ventWallR3.position.set(0, 1.25, -104); scene.add(ventWallR3);
+
+  var ventExitFloor = new THREE.Mesh(new THREE.PlaneGeometry(3, 4), floorMat); ventExitFloor.rotation.x = -Math.PI/2; ventExitFloor.position.set(-1.5, 0, -108); scene.add(ventExitFloor);
+  var ventExitCeil = new THREE.Mesh(new THREE.PlaneGeometry(3, 4), wallMat); ventExitCeil.rotation.x = Math.PI/2; ventExitCeil.position.set(-1.5, 2.5, -108); scene.add(ventExitCeil);
+  
+  var ventDoor = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2.5, 0.2), doorMat); ventDoor.position.set(-1.5, 1.25, -110); scene.add(ventDoor);
+
+  // КОМНАТА 4 (Обрыв)
   var floor4a = new THREE.Mesh(new THREE.PlaneGeometry(10,15), floorMat); floor4a.rotation.x = -Math.PI/2; floor4a.position.set(0, 0, -112.5); scene.add(floor4a);
   var floor4b = new THREE.Mesh(new THREE.PlaneGeometry(10,15), floorMat); floor4b.rotation.x = -Math.PI/2; floor4b.position.set(0, 0, -132.5); scene.add(floor4b);
   var bridge = new THREE.Mesh(new THREE.PlaneGeometry(3,10), new THREE.MeshStandardMaterial({color:0x3a2a2a})); bridge.rotation.x = -Math.PI/2; bridge.position.set(0, 0.1, -122.5); scene.add(bridge);
@@ -345,7 +344,7 @@ chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack); // Задняя с�
       door3.visible=false; ventDoor.visible=false;
     }
     else if(room===3 && toyScanned && camera.position.z<-93) {
-      room = 4; camera.position.set(0,1.6,-97);
+      room = 4; camera.position.set(1.5, 1.6, -97);
       mActive = true; monster.visible = true;
     }
   };
@@ -382,7 +381,11 @@ chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack); // Задняя с�
       if(room===1 || room===2 || room===3) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       } else if(room===4) {
-        if(camera.position.x > 0.5 || camera.position.x < -0.5) camera.position.x = oldX;
+        if(camera.position.z < -98 && camera.position.z > -102) { 
+            if(camera.position.x > 2.5 || camera.position.x < 0.5) camera.position.x = oldX; 
+        } else if (camera.position.z < -102) {
+            if(camera.position.x > -0.5 || camera.position.x < -2.5) camera.position.x = oldX;
+        }
       } else if(room===5) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       }
@@ -416,8 +419,8 @@ chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack); // Задняя с�
       }
     }
 
-    if(!isSpectator && room===4 && camera.position.z < -105) {
-      room = 5; camera.position.set(0, 1.6, -108);
+    if(!isSpectator && room===4 && camera.position.z < -107) {
+      room = 5; camera.position.set(-1.5, 1.6, -112);
       document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
     }
 
