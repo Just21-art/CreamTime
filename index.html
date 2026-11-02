@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime v1.0</title>
+<title>CreamTime v0.10</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
@@ -208,7 +208,7 @@
   var wall3b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall3b.position.set(3,2.5,-95); scene.add(wall3b);
   var door3 = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); door3.position.set(0,2,-95); scene.add(door3);
 
-  // КОРИДОР (Большой, с красным светом и нерабочими дверями)
+  // КОРИДОР
   var hallFloor = new THREE.Mesh(new THREE.PlaneGeometry(10, 30), floorMat); hallFloor.rotation.x = -Math.PI/2; hallFloor.position.z = -110; scene.add(hallFloor);
   var hallCeil = new THREE.Mesh(new THREE.PlaneGeometry(10, 30), wallMat); hallCeil.rotation.x = Math.PI/2; hallCeil.position.y = 5; hallCeil.position.z = -110; scene.add(hallCeil);
   var hallWallL = new THREE.Mesh(new THREE.PlaneGeometry(30, 5), wallMat); hallWallL.rotation.y = Math.PI/2; hallWallL.position.set(-5, 2.5, -110); scene.add(hallWallL);
@@ -218,7 +218,7 @@
   var sideDoor2 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 1.5), doorMat); sideDoor2.position.set(4.9, 1.5, -115); scene.add(sideDoor2);
   var sideDoor3 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 1.5), doorMat); sideDoor3.position.set(-4.9, 1.5, -115); scene.add(sideDoor3);
 
-  // Стена и дверь в комнату с обрывом
+  // Стена и дверь в комнату с обрывом (БЕЗ ФИЗИКИ)
   var wall4 = new THREE.Mesh(new THREE.BoxGeometry(10, 5, 0.2), wallMat); wall4.position.set(0, 2.5, -125); scene.add(wall4);
   var door4 = new THREE.Mesh(new THREE.BoxGeometry(2, 4, 0.2), doorMat); door4.position.set(0, 2, -125); scene.add(door4);
 
@@ -385,7 +385,7 @@
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       } else if(room===4) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
-        if(!hallDoorOpen && camera.position.z < -120) camera.position.z = oldZ;
+        // ФИЗИКА ЭТОЙ СТЕНЫ ОТКЛЮЧЕНА
       } else if(room===5) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       }
