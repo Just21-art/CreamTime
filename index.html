@@ -208,7 +208,7 @@
   var wall3b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall3b.position.set(3,2.5,-95); scene.add(wall3b);
   var door3 = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); door3.position.set(0,2,-95); scene.add(door3);
 
-  // КОРИДОР
+  // КОРИДОР (Большой, с красным светом и нерабочими дверями)
   var hallFloor = new THREE.Mesh(new THREE.PlaneGeometry(10, 30), floorMat); hallFloor.rotation.x = -Math.PI/2; hallFloor.position.z = -110; scene.add(hallFloor);
   var hallCeil = new THREE.Mesh(new THREE.PlaneGeometry(10, 30), wallMat); hallCeil.rotation.x = Math.PI/2; hallCeil.position.y = 5; hallCeil.position.z = -110; scene.add(hallCeil);
   var hallWallL = new THREE.Mesh(new THREE.PlaneGeometry(30, 5), wallMat); hallWallL.rotation.y = Math.PI/2; hallWallL.position.set(-5, 2.5, -110); scene.add(hallWallL);
@@ -345,11 +345,10 @@
       document.getElementById('task').innerText = "Дойди до конца коридора";
     }
     else if(room===4 && !hallDoorOpen && camera.position.z<-120) {
-  hallDoorOpen = true; door4.visible=false; wall4.visible=false;
-  camera.position.set(0, 1.6, -130); // Телепорт в комнату с обрывом
-  room = 5; 
-  document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
- }
+      hallDoorOpen = true; door4.visible=false; wall4.visible=false;
+      camera.position.set(0, 1.6, -130);
+      room = 5;
+      document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
     }
   };
   document.getElementById('closeMod').onclick = function() { document.getElementById('modal').style.display='none'; };
@@ -385,13 +384,10 @@
       if(room===1 || room===2 || room===3) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       } else if(room===4) {
-  if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
-  if(!hallDoorOpen && camera.position.z < -120) camera.position.z = oldZ;
-} else if(room===5) {
-  if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
- }
-       }
-        
+        if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
+        if(!hallDoorOpen && camera.position.z < -120) camera.position.z = oldZ;
+      } else if(room===5) {
+        if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       }
 
       if(room===5 && camera.position.z < -137 && camera.position.z > -147) {
@@ -422,11 +418,6 @@
           document.getElementById('task').innerText = "Предохранители: " + collected + "/3";
         }
       }
-    }
-
-    if(!isSpectator && room===4 && hallDoorOpen && camera.position.z < -126) {
-      room = 5; camera.position.set(0, 1.6, -130);
-      document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
     }
 
     if(!isSpectator && room===5 && camera.position.z < -158) { 
