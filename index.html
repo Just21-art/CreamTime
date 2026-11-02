@@ -385,9 +385,11 @@
       if(room===1 || room===2 || room===3) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       } else if(room===4) {
-    if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
-    if(!hallDoorOpen && camera.position.z < -120) camera.position.z = oldZ;
-  document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
+  if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
+  if(!hallDoorOpen && camera.position.z < -120) camera.position.z = oldZ;
+} else if(room===5) {
+  if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
+ }
        }
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       }
