@@ -150,7 +150,7 @@
     var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.6,0.1), new THREE.MeshStandardMaterial({color:0x222222}));
     leg.position.set(p[0], 0.3, p[1]); scene.add(leg);
   });
- // КОМНАТА 2 (Статуя)
+  // КОМНАТА 2 (Статуя)
   var floor2 = new THREE.Mesh(new THREE.PlaneGeometry(10,25), floorMat); floor2.rotation.x = -Math.PI/2; floor2.position.z = -52.5; scene.add(floor2);
   var lWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); lWall2.rotation.y = Math.PI/2; lWall2.position.set(-5,2.5,-52.5); scene.add(lWall2);
   var rWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); rWall2.rotation.y = -Math.PI/2; rWall2.position.set(5,2.5,-52.5); scene.add(rWall2);
@@ -218,7 +218,9 @@
   var sideDoor2 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 1.5), doorMat); sideDoor2.position.set(4.9, 1.5, -115); scene.add(sideDoor2);
   var sideDoor3 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 1.5), doorMat); sideDoor3.position.set(-4.9, 1.5, -115); scene.add(sideDoor3);
 
-  var door4 = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); door4.position.set(0,2,-125); scene.add(door4);
+  // Стена, которая ЗАКРЫВАЕТ проход в комнату с обрывом
+  var wall4 = new THREE.Mesh(new THREE.BoxGeometry(10, 5, 0.2), wallMat); wall4.position.set(0, 2.5, -125); scene.add(wall4);
+  var door4 = new THREE.Mesh(new THREE.BoxGeometry(2, 4, 0.2), doorMat); door4.position.set(0, 2, -125); scene.add(door4);
 
   // КОМНАТА 4 (Обрыв)
   var floor4a = new THREE.Mesh(new THREE.PlaneGeometry(10,15), floorMat); floor4a.rotation.x = -Math.PI/2; floor4a.position.set(0, 0, -132.5); scene.add(floor4a);
@@ -237,7 +239,8 @@
   var e3 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e3.position.set(-0.3,2.6,0.61); monster.add(e3);
   var e4 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e4.position.set(0.3,2.6,0.61); monster.add(e4);
   
-  monster.position.set(0, 0, -130); 
+  // Монстр появляется в 3-й комнате (у станка)
+  monster.position.set(0, 0, -75); 
   monster.visible=false; scene.add(monster);
 
   var moveF=false, moveB=false, moveL=false, moveR=false, isRun=false;
@@ -336,14 +339,14 @@
       toyScanned = true; toy.visible = false;
       document.getElementById('task').innerText = "Беги в коридор!";
       door3.visible=false; 
+      mActive = true; monster.visible = true; // Монстр оживает в 3 комнате
     }
     else if(room===3 && toyScanned && camera.position.z<-97) {
       room = 4; camera.position.set(0,1.6,-102); 
       document.getElementById('task').innerText = "Дойди до конца коридора";
-      mActive = true; monster.visible = true; // Монстр появляется в 3 комнате и бежит
     }
     else if(room===4 && !hallDoorOpen && camera.position.z<-123) {
-      hallDoorOpen = true; door4.visible=false; 
+      hallDoorOpen = true; door4.visible=false; wall4.visible=false; // Стена и дверь исчезают
       document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
     }
   };
@@ -381,6 +384,8 @@
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       } else if(room===4) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
+        // Блокируем проход, пока стена на месте
+        if(!hallDoorOpen && camera.position.z < -123) camera.position.z = oldZ;
       } else if(room===5) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       }
@@ -415,7 +420,7 @@
       }
     }
 
-    if(!isSpectator && room===4 && camera.position.z < -125) {
+    if(!isSpectator && room===4 && hallDoorOpen && camera.position.z < -126) {
       room = 5; camera.position.set(0, 1.6, -130);
       document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
     }
