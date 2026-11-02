@@ -132,7 +132,6 @@
   [[-3.5,-10],[3.5,-15],[-3.5,-30]].forEach(function(p){ var f = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.4,0.4), fuseMat); f.position.set(p[0],0.5,p[1]); scene.add(f); fuses.push(f); });
   var collected = 0;
 
-  // Охрана в 1 комнате
   var whiteWall = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 0.2), new THREE.MeshStandardMaterial({color: 0xdddddd}));
   whiteWall.position.set(0, 2.5, -34); scene.add(whiteWall);
   var canvasText = document.createElement('canvas'); canvasText.width = 512; canvasText.height = 128;
