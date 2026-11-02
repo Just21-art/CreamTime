@@ -345,7 +345,7 @@
       room = 4; camera.position.set(0,1.6,-102); 
       document.getElementById('task').innerText = "Дойди до конца коридора";
     }
-    else if(room===4 && !hallDoorOpen && camera.position.z<-123) {
+    else if(room===4 && !hallDoorOpen && camera.position.z<-120) {
       hallDoorOpen = true; door4.visible=false; wall4.visible=false; // Стена и дверь исчезают
       document.getElementById('task').innerText = "Замани Мороженосчика в обрыв!";
     }
@@ -385,7 +385,7 @@
       } else if(room===4) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
         // Блокируем проход, пока стена на месте
-        if(!hallDoorOpen && camera.position.z < -123) camera.position.z = oldZ;
+        if(!hallDoorOpen && camera.position.z < -120) camera.position.z = oldZ;
       } else if(room===5) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       }
@@ -404,7 +404,7 @@
       else if(room===3 && !toyCreated && Math.hypot(camera.position.x, camera.position.z+75)<2.5) { actBtn.innerText="⚙ СОЗДАТЬ ИГРУШКУ"; actBtn.style.display='block'; }
       else if(room===3 && toyCreated && !toyScanned && Math.hypot(camera.position.x+3, camera.position.z+85)<2.5) { actBtn.innerText="🔍 ОТСКАНИРОВАТЬ"; actBtn.style.display='block'; }
       else if(room===3 && toyScanned && camera.position.z<-93) { actBtn.innerText="🚪 В КОРИДОР"; actBtn.style.display='block'; }
-      else if(room===4 && !hallDoorOpen && camera.position.z<-123) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
+      else if(room===4 && !hallDoorOpen && camera.position.z<-120) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
       else { actBtn.style.display='none'; }
     } else {
       actBtn.style.display = 'none';
