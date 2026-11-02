@@ -151,16 +151,16 @@
   var desk = new THREE.Mesh(new THREE.BoxGeometry(3, 1.2, 1), new THREE.MeshStandardMaterial({color: 0x4a3a2a}));
   desk.position.set(0, 0.6, -32.5); scene.add(desk);
   
-  // Стул
-  var chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({color: 0x222222}));
-  chairSeat.position.set(0, 0.6, -31.5); scene.add(chairSeat);
-  var chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), new THREE.MeshStandardMaterial({color: 0x222222}));
-  chairBack.position.set(0, 1.0, -31.1); scene.add(chairBack);
-  // Ножки стула (просто для вида)
-  [[-0.35,-31.15],[-0.35,-31.85],[0.35,-31.15],[0.35,-31.85]].forEach(function(p){
-    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.6,0.1), new THREE.MeshStandardMaterial({color:0x222222}));
-    leg.position.set(p[0], 0.3, p[1]); scene.add(leg);
-  });
+  // Стул (повернут лицом к выходу)
+var chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({color: 0x222222}));
+chairSeat.position.set(0, 0.6, -33.5); scene.add(chairSeat);
+var chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), new THREE.MeshStandardMaterial({color: 0x222222}));
+chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack); // Задняя спинка теперь ближе к стене
+// Ножки стула
+[[-0.35,-33.15],[-0.35,-33.85],[0.35,-33.15],[0.35,-33.85]].forEach(function(p){
+  var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.6,0.1), new THREE.MeshStandardMaterial({color:0x222222}));
+  leg.position.set(p[0], 0.3, p[1]); scene.add(leg);
+});
 
   var floor2 = new THREE.Mesh(new THREE.PlaneGeometry(10,25), floorMat); floor2.rotation.x = -Math.PI/2; floor2.position.z = -52.5; scene.add(floor2);
   var lWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); lWall2.rotation.y = Math.PI/2; lWall2.position.set(-5,2.5,-52.5); scene.add(lWall2);
