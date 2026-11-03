@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime v0.10</title>
+<title>CreamTime v0.11 (Big Factory)</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
@@ -74,14 +74,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
   var scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x1a2a3a); 
-  scene.fog = new THREE.Fog(0x1a2a3a, 15, 50); 
+  scene.background = new THREE.Color(0x0a0a15); 
+  scene.fog = new THREE.Fog(0x0a0a15, 20, 90); 
   var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
   camera.position.set(0, 1.6, 10); camera.rotation.order = 'YXZ';
   var renderer = new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(window.innerWidth, window.innerHeight); document.body.appendChild(renderer.domElement);
 
-  var moonLight = new THREE.AmbientLight(0x444466, 0.6); scene.add(moonLight);
+  var moonLight = new THREE.AmbientLight(0x444466, 0.4); scene.add(moonLight);
   var lampLight = new THREE.PointLight(0xffaa00, 2, 15); lampLight.position.set(0, 4, 2); scene.add(lampLight);
   var light1 = new THREE.PointLight(0xffaa00, 1.5, 25); light1.position.set(0, 4, -20); scene.add(light1);
   var light2 = new THREE.PointLight(0xff0000, 2, 25); light2.position.set(0, 4, -50); scene.add(light2);
@@ -89,6 +89,7 @@
   var lightHall = new THREE.PointLight(0xff0000, 2, 40); lightHall.position.set(0, 4, -105); scene.add(lightHall); 
   var light4 = new THREE.PointLight(0xff0000, 2, 30); light4.position.set(0, 4, -130); scene.add(light4); 
 
+  // --- ТЕКСТУРЫ ---
   var canvasFloor = document.createElement('canvas'); canvasFloor.width = 128; canvasFloor.height = 128;
   var ctxFloor = canvasFloor.getContext('2d'); ctxFloor.fillStyle = '#222'; ctxFloor.fillRect(0, 0, 128, 128); ctxFloor.strokeStyle = '#111'; ctxFloor.lineWidth = 4; ctxFloor.strokeRect(0, 0, 128, 128);
   var texFloor = new THREE.CanvasTexture(canvasFloor); texFloor.wrapS = texFloor.wrapT = THREE.RepeatWrapping; texFloor.repeat.set(10, 40);
@@ -98,23 +99,67 @@
   for(var i=0; i<100; i++) { ctxWall.fillStyle = Math.random() > 0.5 ? '#222' : '#333'; ctxWall.fillRect(Math.random()*128, Math.random()*128, 2, 2); }
   var texWall = new THREE.CanvasTexture(canvasWall); texWall.wrapS = texWall.wrapT = THREE.RepeatWrapping; texWall.repeat.set(10, 5);
 
+  // Текстура кирпича для фабрики
+  var canvasBrick = document.createElement('canvas'); canvasBrick.width = 128; canvasBrick.height = 128;
+  var ctxBrick = canvasBrick.getContext('2d'); ctxBrick.fillStyle = '#1a0a0a'; ctxBrick.fillRect(0, 0, 128, 128);
+  ctxBrick.fillStyle = '#2b1111'; 
+  for(let i=0; i<20; i++) { for(let j=0; j<20; j++) { if(Math.random()>0.2) ctxBrick.fillRect(i*7, j*7, 6, 6); } }
+  var texBrick = new THREE.CanvasTexture(canvasBrick); texBrick.wrapS = texBrick.wrapT = THREE.RepeatWrapping; texBrick.repeat.set(4, 4);
+
+  // Текстура ржавчины для труб
+  var canvasRust = document.createElement('canvas'); canvasRust.width = 64; canvasRust.height = 64;
+  var ctxRust = canvasRust.getContext('2d'); ctxRust.fillStyle = '#4a2c15'; ctxRust.fillRect(0, 0, 64, 64);
+  for(let i=0; i<80; i++) { ctxRust.fillStyle = Math.random() > 0.5 ? '#331a08' : '#6b4220'; ctxRust.fillRect(Math.random()*64, Math.random()*64, 3, 3); }
+  var texRust = new THREE.CanvasTexture(canvasRust); texRust.wrapS = texRust.wrapT = THREE.RepeatWrapping;
+
+  // Материалы
   var floorMat = new THREE.MeshStandardMaterial({ map: texFloor, roughness: 0.9 });
   var wallMat = new THREE.MeshStandardMaterial({ map: texWall, roughness: 0.9 });
   var doorMat = new THREE.MeshStandardMaterial({ color: 0x2a1a1a, roughness: 0.7 });
   var boxMat = new THREE.MeshStandardMaterial({ color: 0x8B5A2B, roughness: 0.9 });
+  var factoryMat = new THREE.MeshStandardMaterial({ map: texBrick, roughness: 0.9 });
+  var pipeMat = new THREE.MeshStandardMaterial({ map: texRust, roughness: 0.7 });
 
-  var grass = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshStandardMaterial({color:0x1a3a1a})); grass.rotation.x = -Math.PI/2; grass.position.y = -0.1; scene.add(grass);
-  var road = new THREE.Mesh(new THREE.PlaneGeometry(6,100), new THREE.MeshStandardMaterial({color:0x222222})); road.rotation.x = -Math.PI/2; scene.add(road);
-  var factory = new THREE.Mesh(new THREE.BoxGeometry(12,8,10), new THREE.MeshStandardMaterial({color:0x3a1a1a})); factory.position.set(0,4,-5); scene.add(factory);
+  // --- УЛИЦА И ФАБРИКА ---
+  var grass = new THREE.Mesh(new THREE.PlaneGeometry(150,150), new THREE.MeshStandardMaterial({color:0x0a1a0a})); grass.rotation.x = -Math.PI/2; grass.position.y = -0.1; scene.add(grass);
+  var road = new THREE.Mesh(new THREE.PlaneGeometry(8,100), new THREE.MeshStandardMaterial({color:0x151515})); road.rotation.x = -Math.PI/2; road.position.z = 20; scene.add(road);
 
+  var factoryGroup = new THREE.Group();
+  var factoryMain = new THREE.Mesh(new THREE.BoxGeometry(40, 25, 30), factoryMat); factoryMain.position.set(0, 12.5, -15); factoryGroup.add(factoryMain);
+  var factorySide = new THREE.Mesh(new THREE.BoxGeometry(15, 15, 20), factoryMat); factorySide.position.set(27, 7.5, -10); factoryGroup.add(factorySide);
+  var factorySideL = new THREE.Mesh(new THREE.BoxGeometry(12, 18, 15), factoryMat); factorySideL.position.set(-25, 9, -8); factoryGroup.add(factorySideL);
+  var factoryRoof = new THREE.Mesh(new THREE.BoxGeometry(42, 1, 32), new THREE.MeshStandardMaterial({color:0x111})); factoryRoof.position.set(0, 25, -15); factoryGroup.add(factoryRoof);
+  scene.add(factoryGroup);
+
+  function createPipe(x, y, z, radius, height, rotX, rotZ) {
+      var pipe = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, height, 12), pipeMat);
+      pipe.position.set(x, y, z);
+      if(rotX) pipe.rotation.x = rotX;
+      if(rotZ) pipe.rotation.z = rotZ;
+      scene.add(pipe);
+      return pipe;
+  }
+
+  createPipe(-12, 15, -2, 0.8, 20, 0, 0);
+  createPipe(-14, 18, -2, 0.5, 24, 0, 0);
+  createPipe(12, 15, -2, 0.8, 20, 0, 0);
+  createPipe(14.5, 12, -2, 0.6, 16, 0, 0);
+  createPipe(0, 18, -2, 0.5, 26, 0, Math.PI/2);
+  for(let i = 0; i < 4; i++) { createPipe(-10 + i*7, 27, -15, 1.0, 4, 0, 0); }
+  createPipe(-6, 1.5, 3, 1.2, 3, 0, 0);
+  createPipe(-6, 4.5, -1, 1.2, 4, Math.PI/2, 0);
+
+  // Фонарь
   var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 4), new THREE.MeshStandardMaterial({color:0x111})); pole.position.set(2, 2, 2); scene.add(pole);
   var lampHead = new THREE.Mesh(new THREE.SphereGeometry(0.3), new THREE.MeshStandardMaterial({color:0xffffaa, emissive:0xffaa00})); lampHead.position.set(2, 4, 2); scene.add(lampHead);
 
+  // Входная дверь (осталась на месте z=0.1)
   var doorFrame = new THREE.Mesh(new THREE.BoxGeometry(2.4,4.4,0.1), new THREE.MeshStandardMaterial({color:0x111})); doorFrame.position.set(0,2.2,0.05); scene.add(doorFrame);
   var frontDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); frontDoor.position.set(0,2,0.1); scene.add(frontDoor);
   var handle = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), new THREE.MeshStandardMaterial({color:0x888}));
   handle.position.set(0.7, 2, 0.25); scene.add(handle);
 
+  // Внутренние комнаты (без изменений)
   var floor1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), floorMat); floor1.rotation.x = -Math.PI/2; floor1.position.z = -20; scene.add(floor1);
   var lWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); lWall1.rotation.y = Math.PI/2; lWall1.position.set(-5,2.5,-20); scene.add(lWall1);
   var rWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); rWall1.rotation.y = -Math.PI/2; rWall1.position.set(5,2.5,-20); scene.add(rWall1);
@@ -130,27 +175,7 @@
 
   var fuseMat = new THREE.MeshStandardMaterial({color:0xffff00,emissive:0xffff00}); var fuses = [];
   [[-3.5,-10],[3.5,-15],[-3.5,-30]].forEach(function(p){ var f = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.4,0.4), fuseMat); f.position.set(p[0],0.5,p[1]); scene.add(f); fuses.push(f); });
-  var collected = 0;
-
-  var whiteWall = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 0.2), new THREE.MeshStandardMaterial({color: 0xdddddd}));
-  whiteWall.position.set(0, 2.5, -34); scene.add(whiteWall);
-  var canvasText = document.createElement('canvas'); canvasText.width = 512; canvasText.height = 128;
-  var ctxText = canvasText.getContext('2d'); ctxText.fillStyle = '#ffffff'; ctxText.fillRect(0,0,512,128); 
-  ctxText.fillStyle = '#000000'; ctxText.font = 'bold 80px Arial'; ctxText.textAlign = 'center'; ctxText.fillText('WELCOME', 256, 90);
-  var texText = new THREE.CanvasTexture(canvasText);
-  var textMesh = new THREE.Mesh(new THREE.PlaneGeometry(3.5, 0.8), new THREE.MeshStandardMaterial({map: texText}));
-  textMesh.position.set(0, 3.5, -33.85); scene.add(textMesh);
-  var desk = new THREE.Mesh(new THREE.BoxGeometry(3, 1.2, 1), new THREE.MeshStandardMaterial({color: 0x4a3a2a}));
-  desk.position.set(0, 0.6, -32.5); scene.add(desk);
-  var chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({color: 0x222222}));
-  chairSeat.position.set(0, 0.6, -33.5); scene.add(chairSeat);
-  var chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), new THREE.MeshStandardMaterial({color:0x222222}));
-  chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack);
-  [[-0.35,-33.15],[-0.35,-33.85],[0.35,-33.15],[0.35,-33.85]].forEach(function(p){
-    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.6,0.1), new THREE.MeshStandardMaterial({color:0x222222}));
-    leg.position.set(p[0], 0.3, p[1]); scene.add(leg);
-  });
- // КОМНАТА 2 (Статуя)
+// КОМНАТА 2 (Статуя)
   var floor2 = new THREE.Mesh(new THREE.PlaneGeometry(10,25), floorMat); floor2.rotation.x = -Math.PI/2; floor2.position.z = -52.5; scene.add(floor2);
   var lWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); lWall2.rotation.y = Math.PI/2; lWall2.position.set(-5,2.5,-52.5); scene.add(lWall2);
   var rWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); rWall2.rotation.y = -Math.PI/2; rWall2.position.set(5,2.5,-52.5); scene.add(rWall2);
@@ -171,6 +196,7 @@
   key.position.set(3.5, 1.2, -62); scene.add(key);
   var keyTaken = false;
 
+  // Статуя Мороженщика (Комната 2)
   var statue = new THREE.Group();
   var sBody = new THREE.Mesh(new THREE.BoxGeometry(1,2,1), new THREE.MeshStandardMaterial({color:0xeeeeee})); sBody.position.y=1; statue.add(sBody);
   var sHead = new THREE.Mesh(new THREE.BoxGeometry(1.2,1,1.2), new THREE.MeshStandardMaterial({color:0xff9999})); sHead.position.y=2.5; statue.add(sHead);
@@ -218,7 +244,6 @@
   var sideDoor2 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 1.5), doorMat); sideDoor2.position.set(4.9, 1.5, -115); scene.add(sideDoor2);
   var sideDoor3 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 1.5), doorMat); sideDoor3.position.set(-4.9, 1.5, -115); scene.add(sideDoor3);
 
-  // Стена и дверь в комнату с обрывом (БЕЗ ФИЗИКИ)
   var wall4 = new THREE.Mesh(new THREE.BoxGeometry(10, 5, 0.2), wallMat); wall4.position.set(0, 2.5, -125); scene.add(wall4);
   var door4 = new THREE.Mesh(new THREE.BoxGeometry(2, 4, 0.2), doorMat); door4.position.set(0, 2, -125); scene.add(door4);
 
@@ -239,9 +264,9 @@
   var e3 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e3.position.set(-0.3,2.6,0.61); monster.add(e3);
   var e4 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e4.position.set(0.3,2.6,0.61); monster.add(e4);
   
-  monster.position.set(0, 0, -75); 
-  monster.visible=false; scene.add(monster);
+  monster.position.set(0, 0, -75); monster.visible=false; scene.add(monster);
 
+  // --- ЛОГИКА И УПРАВЛЕНИЕ ---
   var moveF=false, moveB=false, moveL=false, moveR=false, isRun=false;
   var speed=3, runSpeed=6, inside=false, won=false, cameraSens=0.005, mActive=false;
   var paused = false, noteRead = false, doorOpen = false;
@@ -309,7 +334,7 @@
   var actBtn = document.getElementById('actBtn');
   actBtn.onclick = function() {
     if(isSpectator) return;
-    if(!inside && camera.position.z>2 && camera.position.z<7) { 
+    if(!inside && camera.position.z > 2 && camera.position.z < 7) { 
       inside=true; camera.position.set(0,1.6,-2); actBtn.style.display='none'; 
       document.getElementById('task').innerText = "Найди предохранители (0/3)";
     }
@@ -385,7 +410,6 @@
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       } else if(room===4) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
-        // ФИЗИКА ЭТОЙ СТЕНЫ ОТКЛЮЧЕНА
       } else if(room===5) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       }
