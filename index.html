@@ -406,7 +406,7 @@
   };
   document.getElementById('closeMod').onclick = function() { document.getElementById('modal').style.display='none'; };
 
-  var clock = new THREE.Clock();
+ var clock = new THREE.Clock();
   function animate() {
     if(won) return;
     requestAnimationFrame(animate);
@@ -435,16 +435,19 @@
     if(!isSpectator){
       if(camera.position.z > 15 || camera.position.z < -159) camera.position.z = oldZ;
       
-      // Боковые стены для всех комнат
+      // Боковые стены
       if(room===1 || room===2 || room===3 || room===4 || room===5) {
         if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
       }
 
-      // Физика стен между комнатами (чтобы не пройти сквозь них раньше времени)
-      if(room===1 && camera.position.z < -39.5) camera.position.z = oldZ;
-      if(room===2 && camera.position.z < -64.5) camera.position.z = oldZ;
-      if(room===3 && camera.position.z < -94.5) camera.position.z = oldZ;
-      if(room===4 && camera.position.z < -124.5 && !hallDoorOpen) camera.position.z = oldZ;
+      // Невидимые барьеры (двери)
+      if(!inside && camera.position.z < 0.5) camera.position.z = oldZ;
+      if(inside && room===1 && !doorOpen && camera.position.z < -38.5) camera.position.z = oldZ;
+      if(room===2 && !keyTaken && camera.position.z < -63.5) camera.position.z = oldZ;
+      if(room===3 && !toyScanned && camera.position.z < -93.5) camera.position.z = oldZ;
+      if(room===3 && toyCreated && !toyScanned && camera.position.z < -90) camera.position.z = oldZ;
+      if(room===3 && toyScanned && camera.position.z < -96) camera.position.z = oldZ;
+      if(room===4 && !hallDoorOpen && camera.position.z < -123.5) camera.position.z = oldZ;
 
       // Проверка падения в обрыв
       if(room===5 && camera.position.z < -137 && camera.position.z > -147) {
@@ -452,17 +455,17 @@
       }
     }
 
-    // Кнопки действия
+    // --- КНОПКИ ДЕЙСТВИЯ ---
     if(!isSpectator){
-      if(!inside && camera.position.z < -1 && camera.position.z > -5) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
+      if(!inside && camera.position.z < 3 && camera.position.z > 0.5) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
       else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) { actBtn.innerText="📜 ПРОЧИТАТЬ"; actBtn.style.display='block'; }
       else if(inside && collected===3 && !doorOpen && camera.position.z<-35) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
       else if(room===2 && !keyTaken && Math.hypot(camera.position.x-3.5, camera.position.z+62)<2.5) { actBtn.innerText="🔑 ВЗЯТЬ КЛЮЧ"; actBtn.style.display='block'; }
-      else if(room===2 && keyTaken && camera.position.z<-63) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
+      else if(room===2 && keyTaken && camera.position.z<-62) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
       else if(room===3 && !toyCreated && Math.hypot(camera.position.x, camera.position.z+75)<2.5) { actBtn.innerText="⚙ СОЗДАТЬ ИГРУШКУ"; actBtn.style.display='block'; }
       else if(room===3 && toyCreated && !toyScanned && Math.hypot(camera.position.x+3, camera.position.z+85)<2.5) { actBtn.innerText="🔍 ОТСКАНИРОВАТЬ"; actBtn.style.display='block'; }
       else if(room===3 && toyScanned && camera.position.z<-93) { actBtn.innerText="🚪 В КОРИДОР"; actBtn.style.display='block'; }
-      else if(room===4 && !hallDoorOpen && camera.position.z<-120) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
+      else if(room===4 && !hallDoorOpen && camera.position.z<-122) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
       else { actBtn.style.display='none'; }
     } else {
       actBtn.style.display = 'none';
@@ -485,12 +488,19 @@
       document.getElementById('win').style.display='flex'; 
     }
 
-    // ИИ Мороженщика
+    // --- ИИ МОРОЖЕНОСЧИКА ---
     if(!isSpectator && mActive && monster.visible){
+      // Телепортируем его за спину игрока при входе в коридор
+      if (room===4 && monster.position.z === -75) {
+        monster.position.z = -100; 
+      }
+
       var mDir = new THREE.Vector3(camera.position.x-monster.position.x, 0, camera.position.z-monster.position.z).normalize();
       
-      monster.position.x += mDir.x * 1.5 * delta;
-      monster.position.z += mDir.z * 1.5 * delta;
+      var monsterSpeed = 2.0 * delta;
+      
+      monster.position.x += mDir.x * monsterSpeed;
+      monster.position.z += mDir.z * monsterSpeed;
       
       if (monster.position.x > 4) monster.position.x = 4;
       if (monster.position.x < -4) monster.position.x = -4;
@@ -508,6 +518,7 @@
         alert("Вас поймал Мороженосчик!"); location.reload();
       }
     }
+    
     renderer.render(scene, camera);
   }
 </script>
