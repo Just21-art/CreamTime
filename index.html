@@ -354,7 +354,7 @@
     if(isSpectator) return;
     
     // 1. Вход с улицы (координаты подогнаны под новую дверь)
-    if(!inside && camera.position.z > -5 && camera.position.z < -1) { 
+    if(!inside && camera.position.z > -2 && camera.position.z < 4) { 
       inside=true; camera.position.set(0,1.6,-2); actBtn.style.display='none'; 
       document.getElementById('task').innerText = "Найди предохранители (0/3)";
     }
