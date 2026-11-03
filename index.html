@@ -457,8 +457,7 @@
 
     // --- КНОПКИ ДЕЙСТВИЯ ---
     if(!isSpectator){
-      if(!inside && camera.position.z < 3 && camera.position.z > 0.5) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
-      else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) { actBtn.innerText="📜 ПРОЧИТАТЬ"; actBtn.style.display='block'; }
+  if(!inside && camera.position.z < 4 && camera.position.z > -2) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
       else if(inside && collected===3 && !doorOpen && camera.position.z<-35) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
       else if(room===2 && !keyTaken && Math.hypot(camera.position.x-3.5, camera.position.z+62)<2.5) { actBtn.innerText="🔑 ВЗЯТЬ КЛЮЧ"; actBtn.style.display='block'; }
       else if(room===2 && keyTaken && camera.position.z<-62) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
