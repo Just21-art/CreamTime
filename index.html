@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime v0.11 (Fixed)</title>
+<title>CreamTime v0.12 (Fixed)</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
@@ -89,7 +89,6 @@
   var lightHall = new THREE.PointLight(0xff0000, 2, 40); lightHall.position.set(0, 4, -105); scene.add(lightHall); 
   var light4 = new THREE.PointLight(0xff0000, 2, 30); light4.position.set(0, 4, -130); scene.add(light4); 
 
-  // --- ТЕКСТУРЫ ---
   var canvasFloor = document.createElement('canvas'); canvasFloor.width = 128; canvasFloor.height = 128;
   var ctxFloor = canvasFloor.getContext('2d'); ctxFloor.fillStyle = '#222'; ctxFloor.fillRect(0, 0, 128, 128); ctxFloor.strokeStyle = '#111'; ctxFloor.lineWidth = 4; ctxFloor.strokeRect(0, 0, 128, 128);
   var texFloor = new THREE.CanvasTexture(canvasFloor); texFloor.wrapS = texFloor.wrapT = THREE.RepeatWrapping; texFloor.repeat.set(10, 40);
@@ -117,7 +116,6 @@
   var factoryMat = new THREE.MeshStandardMaterial({ map: texBrick, roughness: 0.9 });
   var pipeMat = new THREE.MeshStandardMaterial({ map: texRust, roughness: 0.7 });
 
-  // --- УЛИЦА И ФАБРИКА ---
   var grass = new THREE.Mesh(new THREE.PlaneGeometry(150,150), new THREE.MeshStandardMaterial({color:0x0a1a0a})); grass.rotation.x = -Math.PI/2; grass.position.y = -0.1; scene.add(grass);
   var road = new THREE.Mesh(new THREE.PlaneGeometry(8,100), new THREE.MeshStandardMaterial({color:0x151515})); road.rotation.x = -Math.PI/2; road.position.z = 20; scene.add(road);
 
@@ -167,7 +165,6 @@
   [[-2.9,-24.6],[-1.1,-24.6],[-2.9,-25.4],[-1.1,-25.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), boxMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
   var note1 = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.02,0.3), new THREE.MeshStandardMaterial({color:0xffff99,emissive:0x333300})); note1.position.set(-2,1.06,-25); scene.add(note1);
 
-  // Стол, стул и надпись
   var whiteWall = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 0.2), new THREE.MeshStandardMaterial({color: 0xdddddd}));
   whiteWall.position.set(0, 2.5, -34); scene.add(whiteWall);
   
@@ -353,50 +350,41 @@
   actBtn.onclick = function() {
     if(isSpectator) return;
     
-    // 1. Вход с улицы (координаты подогнаны под новую дверь)
     if(!inside && camera.position.z > -2 && camera.position.z < 4) { 
       inside=true; camera.position.set(0,1.6,-2); actBtn.style.display='none'; 
       document.getElementById('task').innerText = "Найди предохранители (0/3)";
     }
-    // 2. Записка
     else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) {
       document.getElementById('modal').style.display='flex'; noteRead=true; actBtn.style.display='none';
     }
-    // 3. Открыть дверь после предохранителей
     else if(inside && collected===3 && !doorOpen && camera.position.z<-35) {
       doorOpen=true; endDoor.visible=false; 
       camera.position.set(0,1.6,-42); room = 2;
       document.getElementById('task').innerText = "Найди ключ в комнате";
     }
-    // 4. Взять ключ
     else if(room===2 && !keyTaken && Math.hypot(camera.position.x-3.5, camera.position.z+62)<2.5) {
       keyTaken = true; key.visible=false;
       document.getElementById('task').innerText = "Иди в комнату с фабрикой";
       door2.visible = false;
     }
-    // 5. Войти в 3 комнату
     else if(room===2 && keyTaken && camera.position.z<-63) {
       room = 3; camera.position.set(0,1.6,-67);
       document.getElementById('task').innerText = "Создай игрушку на станке";
     }
-    // 6. Создать игрушку
     else if(room===3 && !toyCreated && Math.hypot(camera.position.x, camera.position.z+75)<2.5) {
       toyCreated = true; toy.visible = true;
       document.getElementById('task').innerText = "Положи игрушку на стол и отсканируй";
     }
-    // 7. Сканировать игрушку
     else if(room===3 && toyCreated && !toyScanned && Math.hypot(camera.position.x+3, camera.position.z+85)<2.5) {
       toyScanned = true; toy.visible = false;
       document.getElementById('task').innerText = "Беги в коридор!";
       door3.visible=false; 
       mActive = true; monster.visible = true;
     }
-    // 8. Войти в коридор
     else if(room===3 && toyScanned && camera.position.z<-97) {
       room = 4; camera.position.set(0,1.6,-102); 
       document.getElementById('task').innerText = "Дойди до конца коридора";
     }
-    // 9. Открыть дверь в комнату с обрывом
     else if(room===4 && !hallDoorOpen && camera.position.z<-120) {
       hallDoorOpen = true; door4.visible=false; wall4.visible=false;
       camera.position.set(0, 1.6, -130);
@@ -406,7 +394,7 @@
   };
   document.getElementById('closeMod').onclick = function() { document.getElementById('modal').style.display='none'; };
 
- var clock = new THREE.Clock();
+  var clock = new THREE.Clock();
   function animate() {
     if(won) return;
     requestAnimationFrame(animate);
@@ -431,25 +419,23 @@
       if(camera.position.y > 15) camera.position.y = 15;
     }
 
-    // --- ИСПРАВЛЕННАЯ ФИЗИКА СТЕН ---
+    // --- ФИЗИКА И БАРЬЕРЫ ---
     if(!isSpectator){
       if(camera.position.z > 15 || camera.position.z < -159) camera.position.z = oldZ;
       
-      // Боковые стены
-      if(room===1 || room===2 || room===3 || room===4 || room===5) {
-        if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
-      }
+      if(camera.position.x > 4.5 || camera.position.x < -4.5) camera.position.x = oldX;
 
-      // Невидимые барьеры (двери)
       if(!inside && camera.position.z < 0.5) camera.position.z = oldZ;
       if(inside && room===1 && !doorOpen && camera.position.z < -38.5) camera.position.z = oldZ;
       if(room===2 && !keyTaken && camera.position.z < -63.5) camera.position.z = oldZ;
       if(room===3 && !toyScanned && camera.position.z < -93.5) camera.position.z = oldZ;
       if(room===3 && toyCreated && !toyScanned && camera.position.z < -90) camera.position.z = oldZ;
+      
+      // ИСПРАВЛЕННЫЙ БАРЬЕР: теперь пускает в коридор после сканирования
       if(room===3 && toyScanned && camera.position.z < -97) camera.position.z = oldZ;
+      
       if(room===4 && !hallDoorOpen && camera.position.z < -123.5) camera.position.z = oldZ;
 
-      // Проверка падения в обрыв
       if(room===5 && camera.position.z < -137 && camera.position.z > -147) {
         if (camera.position.x < -1.5 || camera.position.x > 1.5) { alert('Вы упали в обрыв!'); location.reload(); }
       }
@@ -457,7 +443,8 @@
 
     // --- КНОПКИ ДЕЙСТВИЯ ---
     if(!isSpectator){
-  if(!inside && camera.position.z < 4 && camera.position.z > -2) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
+      if(!inside && camera.position.z < 4 && camera.position.z > -2) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
+      else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) { actBtn.innerText="📜 ПРОЧИТАТЬ"; actBtn.style.display='block'; }
       else if(inside && collected===3 && !doorOpen && camera.position.z<-35) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
       else if(room===2 && !keyTaken && Math.hypot(camera.position.x-3.5, camera.position.z+62)<2.5) { actBtn.innerText="🔑 ВЗЯТЬ КЛЮЧ"; actBtn.style.display='block'; }
       else if(room===2 && keyTaken && camera.position.z<-62) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
@@ -489,13 +476,11 @@
 
     // --- ИИ МОРОЖЕНОСЧИКА ---
     if(!isSpectator && mActive && monster.visible){
-      // Телепортируем его за спину игрока при входе в коридор
       if (room===4 && monster.position.z === -75) {
         monster.position.z = -100; 
       }
 
       var mDir = new THREE.Vector3(camera.position.x-monster.position.x, 0, camera.position.z-monster.position.z).normalize();
-      
       var monsterSpeed = 2.0 * delta;
       
       monster.position.x += mDir.x * monsterSpeed;
