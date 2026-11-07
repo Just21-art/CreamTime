@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime v0.12 (Fixed)</title>
+<title>CreamTime v0.13</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
@@ -68,6 +68,8 @@
   <button id="closeMod" style="margin-top:20px; padding:10px 20px; background:#ff3333; color:#fff; border:none; border-radius:5px;">ЗАКРЫТЬ</button>
 </div>
 <div id="win">
+  <h1 style="color:#ffaa00; font-size:32px; margin-bottom:10px; text-shadow: 0 0 10px #ffaa00;">ГЛАВА 1 ПРОЙДЕНА!</h1>
+  
   <div style="text-align:center; color:#ccc; font-size:14px; margin-bottom:25px; line-height:1.6;">
     <p style="color:#fff; font-weight:bold; font-size:16px;">Создал: Just21-art</p>
     <p>Разработка велась с 25.10.2026 до 23.11.2026</p>
@@ -81,7 +83,6 @@
   <button onclick="location.reload()" style="padding:12px 40px; background:#ffaa00; border:none; font-weight:bold; border-radius:10px; font-size:18px; cursor:pointer;">В МЕНЮ</button>
   
   <p style="position:absolute; bottom:20px; color:#555; font-size:12px; letter-spacing:2px;">2026</p>
-</div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -164,7 +165,20 @@
   var handle = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), new THREE.MeshStandardMaterial({color:0x888}));
   handle.position.set(0.7, 2, 0.25); scene.add(handle);
 
-  var floor1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), floorMat); floor1.rotation.x = -Math.PI/2; floor1.position.z = -20; scene.add(floor1);
+  // --- ФИКС ПЛИТКИ В 1 КОМНАТЕ ---
+  var floorTexClone = texFloor.clone();
+  floorTexClone.needsUpdate = true;
+  floorTexClone.wrapS = THREE.RepeatWrapping;
+  floorTexClone.wrapT = THREE.RepeatWrapping;
+  floorTexClone.repeat.set(5, 20);
+
+  var floorMatClone = new THREE.MeshStandardMaterial({ map: floorTexClone, roughness: 0.9 });
+  
+  var floor1 = new THREE.Mesh(new THREE.PlaneGeometry(10, 40), floorMatClone); 
+  floor1.rotation.x = -Math.PI/2; 
+  floor1.position.z = -20; 
+  scene.add(floor1);
+
   var lWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); lWall1.rotation.y = Math.PI/2; lWall1.position.set(-5,2.5,-20); scene.add(lWall1);
   var rWall1 = new THREE.Mesh(new THREE.PlaneGeometry(40,5), wallMat); rWall1.rotation.y = -Math.PI/2; rWall1.position.set(5,2.5,-20); scene.add(rWall1);
   var ceil1 = new THREE.Mesh(new THREE.PlaneGeometry(10,40), wallMat); ceil1.rotation.x = Math.PI/2; ceil1.position.y = 5; ceil1.position.z = -20; scene.add(ceil1);
@@ -172,7 +186,7 @@
   var wall1a = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall1a.position.set(-3,2.5,-40); scene.add(wall1a);
   var wall1b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall1b.position.set(3,2.5,-40); scene.add(wall1b);
   var endDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); endDoor.position.set(0,2,-40); scene.add(endDoor);
- // --- КОМНАТА 1 (ОХРАННИК И WELCOME) ---
+ // --- КОМНАТА 1 (ОХРАННИК, WELCOME, СТОЛЫ И СТУЛЬЯ) ---
   var table1 = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), boxMat); table1.position.set(-2,1.0,-25); scene.add(table1);
   [[-2.9,-24.6],[-1.1,-24.6],[-2.9,-25.4],[-1.1,-25.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), boxMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
   var note1 = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.02,0.3), new THREE.MeshStandardMaterial({color:0xffff99,emissive:0x333300})); note1.position.set(-2,1.06,-25); scene.add(note1);
@@ -199,6 +213,43 @@
     leg.position.set(p[0], 0.3, p[1]); scene.add(leg);
   });
 
+  // --- НОВЫЕ СТОЛЫ И СТУЛЬЯ ---
+  function createChair(x, z, rotY) {
+    var group = new THREE.Group();
+    var seat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({color: 0x222222}));
+    seat.position.y = 0.6; group.add(seat);
+    var back = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), new THREE.MeshStandardMaterial({color: 0x222222}));
+    back.position.set(0, 1.0, -0.35); group.add(back);
+    [[-0.35, 0.35], [-0.35, -0.35], [0.35, 0.35], [0.35, -0.35]].forEach(function(p){
+      var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.6, 0.1), new THREE.MeshStandardMaterial({color: 0x222222}));
+      leg.position.set(p[0], 0.3, p[1]); group.add(leg);
+    });
+    group.position.set(x, 0, z);
+    group.rotation.y = rotY;
+    scene.add(group);
+  }
+
+  var tableL = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 1), boxMat); 
+  tableL.position.set(-3.5, 1.0, -15); 
+  scene.add(tableL);
+  [[-4.4, -14.6], [-2.6, -14.6], [-4.4, -15.4], [-2.6, -15.4]].forEach(function(p){ 
+    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), boxMat); 
+    leg.position.set(p[0], 0.5, p[1]); 
+    scene.add(leg); 
+  });
+  createChair(-3.5, -13.8, 0);
+
+  var tableR = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 1), boxMat); 
+  tableR.position.set(3.5, 1.0, -20); 
+  scene.add(tableR);
+  [[2.6, -19.6], [4.4, -19.6], [2.6, -20.4], [4.4, -20.4]].forEach(function(p){ 
+    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), boxMat); 
+    leg.position.set(p[0], 0.5, p[1]); 
+    scene.add(leg); 
+  });
+  createChair(3.5, -18.8, 0);
+
+  // --- ПРЕДОХРАНИТЕЛИ ---
   var fuseMat = new THREE.MeshStandardMaterial({color:0xffff00,emissive:0xffff00}); var fuses = [];
   [[-3.5,-10],[3.5,-15],[-3.5,-30]].forEach(function(p){ var f = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.4,0.4), fuseMat); f.position.set(p[0],0.5,p[1]); scene.add(f); fuses.push(f); });
   var collected = 0;
@@ -431,7 +482,6 @@
       if(camera.position.y > 15) camera.position.y = 15;
     }
 
-    // --- ФИЗИКА И БАРЬЕРЫ ---
     if(!isSpectator){
       if(camera.position.z > 15 || camera.position.z < -159) camera.position.z = oldZ;
       
@@ -442,10 +492,7 @@
       if(room===2 && !keyTaken && camera.position.z < -63.5) camera.position.z = oldZ;
       if(room===3 && !toyScanned && camera.position.z < -93.5) camera.position.z = oldZ;
       if(room===3 && toyCreated && !toyScanned && camera.position.z < -90) camera.position.z = oldZ;
-      
-      // ИСПРАВЛЕННЫЙ БАРЬЕР: теперь пускает в коридор после сканирования
-      
-      
+      if(room===3 && toyScanned && camera.position.z < -97) camera.position.z = oldZ;
       if(room===4 && !hallDoorOpen && camera.position.z < -123.5) camera.position.z = oldZ;
 
       if(room===5 && camera.position.z < -137 && camera.position.z > -147) {
@@ -453,7 +500,6 @@
       }
     }
 
-    // --- КНОПКИ ДЕЙСТВИЯ ---
     if(!isSpectator){
       if(!inside && camera.position.z < 4 && camera.position.z > -2) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
       else if(inside && !noteRead && Math.hypot(camera.position.x+2, camera.position.z+25)<3) { actBtn.innerText="📜 ПРОЧИТАТЬ"; actBtn.style.display='block'; }
@@ -469,7 +515,6 @@
       actBtn.style.display = 'none';
     }
 
-    // Сбор предохранителей
     if(!isSpectator && inside && room===1 && collected<3) {
       for(var i=fuses.length-1; i>=0; i--){
         var f = fuses[i];
@@ -480,13 +525,11 @@
       }
     }
 
-    // Победа
     if(!isSpectator && room===5 && camera.position.z < -158) { 
       won = true; 
       document.getElementById('win').style.display='flex'; 
     }
 
-    // --- ИИ МОРОЖЕНОСЧИКА ---
     if(!isSpectator && mActive && monster.visible){
       if (room===4 && monster.position.z === -75) {
         monster.position.z = -100; 
