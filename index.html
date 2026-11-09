@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime v0.14 (Textures)</title>
+<title>CreamTime v0.15</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
@@ -94,7 +94,7 @@
   var renderer = new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(window.innerWidth, window.innerHeight); document.body.appendChild(renderer.domElement);
 
-  var moonLight = new THREE.AmbientLight(0x444466, 0.4); scene.add(moonLight);
+  var moonLight = new THREE.AmbientLight(0x444466, 0.6); scene.add(moonLight);
   var lampLight = new THREE.PointLight(0xffaa00, 2, 15); lampLight.position.set(0, 4, 2); scene.add(lampLight);
   var light1 = new THREE.PointLight(0xffaa00, 1.5, 25); light1.position.set(0, 4, -20); scene.add(light1);
   var light2 = new THREE.PointLight(0xff0000, 2, 25); light2.position.set(0, 4, -50); scene.add(light2);
@@ -125,18 +125,18 @@
 
   // НОВЫЕ ТЕКСТУРЫ
   var canvasWood = document.createElement('canvas'); canvasWood.width = 128; canvasWood.height = 128;
-  var ctxWood = canvasWood.getContext('2d'); ctxWood.fillStyle = '#3e2723'; ctxWood.fillRect(0, 0, 128, 128);
-  ctxWood.fillStyle = '#2d1b18'; for(let i=0; i<40; i++) { ctxWood.fillRect(0, Math.random()*128, 128, Math.random()*4); }
+  var ctxWood = canvasWood.getContext('2d'); ctxWood.fillStyle = '#5d4037'; ctxWood.fillRect(0, 0, 128, 128);
+  ctxWood.fillStyle = '#4e342e'; for(let i=0; i<40; i++) { ctxWood.fillRect(0, Math.random()*128, 128, Math.random()*4); }
   var texWood = new THREE.CanvasTexture(canvasWood); texWood.wrapS = texWood.wrapT = THREE.RepeatWrapping;
 
   var canvasMetal = document.createElement('canvas'); canvasMetal.width = 128; canvasMetal.height = 128;
-  var ctxMetal = canvasMetal.getContext('2d'); ctxMetal.fillStyle = '#4f4f4f'; ctxMetal.fillRect(0, 0, 128, 128);
-  for(let i=0; i<50; i++) { ctxMetal.fillStyle = Math.random() > 0.5 ? '#3a3a3a' : '#6a6a6a'; ctxMetal.fillRect(Math.random()*128, Math.random()*128, Math.random()*10, Math.random()*10); }
+  var ctxMetal = canvasMetal.getContext('2d'); ctxMetal.fillStyle = '#666666'; ctxMetal.fillRect(0, 0, 128, 128);
+  for(let i=0; i<50; i++) { ctxMetal.fillStyle = Math.random() > 0.5 ? '#444' : '#888'; ctxMetal.fillRect(Math.random()*128, Math.random()*128, Math.random()*10, Math.random()*10); }
   var texMetal = new THREE.CanvasTexture(canvasMetal); texMetal.wrapS = texMetal.wrapT = THREE.RepeatWrapping;
 
   var canvasConcrete = document.createElement('canvas'); canvasConcrete.width = 128; canvasConcrete.height = 128;
-  var ctxConcrete = canvasConcrete.getContext('2d'); ctxConcrete.fillStyle = '#2a2a2a'; ctxConcrete.fillRect(0, 0, 128, 128);
-  for(let i=0; i<200; i++) { ctxConcrete.fillStyle = Math.random() > 0.5 ? '#1f1f1f' : '#383838'; ctxConcrete.fillRect(Math.random()*128, Math.random()*128, 2, 2); }
+  var ctxConcrete = canvasConcrete.getContext('2d'); ctxConcrete.fillStyle = '#444444'; ctxConcrete.fillRect(0, 0, 128, 128);
+  for(let i=0; i<200; i++) { ctxConcrete.fillStyle = Math.random() > 0.5 ? '#333' : '#555'; ctxConcrete.fillRect(Math.random()*128, Math.random()*128, 2, 2); }
   var texConcrete = new THREE.CanvasTexture(canvasConcrete); texConcrete.wrapS = texConcrete.wrapT = THREE.RepeatWrapping;
 
   // МАТЕРИАЛЫ
@@ -146,8 +146,10 @@
   var boxMat = new THREE.MeshStandardMaterial({ color: 0x8B5A2B, roughness: 0.9 });
   var factoryMat = new THREE.MeshStandardMaterial({ map: texBrick, roughness: 0.9 });
   var pipeMat = new THREE.MeshStandardMaterial({ map: texRust, roughness: 0.7 });
-  var woodMat = new THREE.MeshStandardMaterial({ map: texWood, roughness: 0.8 });
-  var metalMat = new THREE.MeshStandardMaterial({ map: texMetal, metalness: 0.6, roughness: 0.4 });
+  
+  // НОВЫЕ МАТЕРИАЛЫ (с добавлением света для видимости)
+  var woodMat = new THREE.MeshStandardMaterial({ map: texWood, roughness: 0.8, color: 0xcccccc }); 
+  var metalMat = new THREE.MeshStandardMaterial({ map: texMetal, metalness: 0.8, roughness: 0.3 });
   var concreteMat = new THREE.MeshStandardMaterial({ map: texConcrete, roughness: 0.95 });
 
   var grass = new THREE.Mesh(new THREE.PlaneGeometry(150,150), new THREE.MeshStandardMaterial({color:0x0a1a0a})); grass.rotation.x = -Math.PI/2; grass.position.y = -0.1; scene.add(grass);
@@ -206,11 +208,10 @@
   var wall1b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall1b.position.set(3,2.5,-40); scene.add(wall1b);
   var endDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); endDoor.position.set(0,2,-40); scene.add(endDoor);
  // --- КОМНАТА 1 (ОХРАННИК, WELCOME, СТОЛЫ И СТУЛЬЯ) ---
-  // Простые красивые материалы
-var woodColor = new THREE.MeshStandardMaterial({color: 0x8B4513, roughness: 0.7}); // Коричневое дерево
-var metalColor = new THREE.MeshStandardMaterial({color: 0x777777, metalness: 0.8, roughness: 0.2}); // Блестящий металл
-var concreteColor = new THREE.MeshStandardMaterial({color: 0x555555, roughness: 0.9}); // Серый бетон
- 
+  var table1 = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), woodMat); table1.position.set(-2,1.0,-25); scene.add(table1);
+  [[-2.9,-24.6],[-1.1,-24.6],[-2.9,-25.4],[-1.1,-25.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), woodMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
+  var note1 = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.02,0.3), new THREE.MeshStandardMaterial({color:0xffff99,emissive:0x333300})); note1.position.set(-2,1.06,-25); scene.add(note1);
+
   var whiteWall = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 0.2), new THREE.MeshStandardMaterial({color: 0xdddddd}));
   whiteWall.position.set(0, 2.5, -34); scene.add(whiteWall);
   
@@ -221,26 +222,26 @@ var concreteColor = new THREE.MeshStandardMaterial({color: 0x555555, roughness: 
   var textMesh = new THREE.Mesh(new THREE.PlaneGeometry(3.5, 0.8), new THREE.MeshStandardMaterial({map: texText}));
   textMesh.position.set(0, 3.5, -33.85); scene.add(textMesh);
   
-  var desk = new THREE.Mesh(new THREE.BoxGeometry(3, 1.2, 1), new THREE.MeshStandardMaterial({color: 0x4a3a2a}));
+  var desk = new THREE.Mesh(new THREE.BoxGeometry(3, 1.2, 1), woodMat);
   desk.position.set(0, 0.6, -32.5); scene.add(desk);
   
-  var chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({color: 0x222222}));
+  var chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), woodMat);
   chairSeat.position.set(0, 0.6, -33.5); scene.add(chairSeat);
-  var chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), new THREE.MeshStandardMaterial({color:0x222222}));
+  var chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), woodMat);
   chairBack.position.set(0, 1.0, -33.9); scene.add(chairBack);
   [[-0.35,-33.15],[-0.35,-33.85],[0.35,-33.15],[0.35,-33.85]].forEach(function(p){
-    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.6,0.1), new THREE.MeshStandardMaterial({color:0x222222}));
+    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.6,0.1), woodMat);
     leg.position.set(p[0], 0.3, p[1]); scene.add(leg);
   });
 
   function createChair(x, z, rotY) {
     var group = new THREE.Group();
-    var seat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({color: 0x222222}));
+    var seat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), woodMat);
     seat.position.y = 0.6; group.add(seat);
-    var back = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), new THREE.MeshStandardMaterial({color: 0x222222}));
+    var back = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.1), woodMat);
     back.position.set(0, 1.0, -0.35); group.add(back);
     [[-0.35, 0.35], [-0.35, -0.35], [0.35, 0.35], [0.35, -0.35]].forEach(function(p){
-      var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.6, 0.1), new THREE.MeshStandardMaterial({color: 0x222222}));
+      var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.6, 0.1), woodMat);
       leg.position.set(p[0], 0.3, p[1]); group.add(leg);
     });
     group.position.set(x, 0, z);
@@ -248,21 +249,21 @@ var concreteColor = new THREE.MeshStandardMaterial({color: 0x555555, roughness: 
     scene.add(group);
   }
 
-  var tableL = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 1), boxMat); 
+  var tableL = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 1), woodMat); 
   tableL.position.set(-3.5, 1.0, -15); 
   scene.add(tableL);
   [[-4.4, -14.6], [-2.6, -14.6], [-4.4, -15.4], [-2.6, -15.4]].forEach(function(p){ 
-    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), boxMat); 
+    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), woodMat); 
     leg.position.set(p[0], 0.5, p[1]); 
     scene.add(leg); 
   });
   createChair(-3.5, -13.8, 0);
 
-  var tableR = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 1), boxMat); 
+  var tableR = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 1), woodMat); 
   tableR.position.set(3.5, 1.0, -20); 
   scene.add(tableR);
   [[2.6, -19.6], [4.4, -19.6], [2.6, -20.4], [4.4, -20.4]].forEach(function(p){ 
-    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), boxMat); 
+    var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), woodMat); 
     leg.position.set(p[0], 0.5, p[1]); 
     scene.add(leg); 
   });
@@ -282,11 +283,11 @@ var concreteColor = new THREE.MeshStandardMaterial({color: 0x555555, roughness: 
   var wall2b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall2b.position.set(3,2.5,-65); scene.add(wall2b);
   var door2 = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); door2.position.set(0,2,-65); scene.add(door2);
 
-  function crate(x,y,z,s){var b=new THREE.Mesh(new THREE.BoxGeometry(s,s,s),boxMat);b.position.set(x,y+(s/2),z);scene.add(b);}
+  function crate(x,y,z,s){var b=new THREE.Mesh(new THREE.BoxGeometry(s,s,s),woodMat);b.position.set(x,y+(s/2),z);scene.add(b);}
   crate(-4,0,-45,1.5); crate(-4,0,-48,1); crate(4,0,-50,2); crate(3.5,0,-60,1.2);
 
-  var table2 = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), boxMat); table2.position.set(0,1.0,-55); scene.add(table2);
-  [[-0.9,-54.6],[0.9,-54.6],[-0.9,-55.4],[0.9,-55.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), boxMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
+  var table2 = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), woodMat); table2.position.set(0,1.0,-55); scene.add(table2);
+  [[-0.9,-54.6],[0.9,-54.6],[-0.9,-55.4],[0.9,-55.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), woodMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
   var note2 = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.02,0.3), new THREE.MeshStandardMaterial({color:0xffff99,emissive:0x333300})); note2.position.set(0,1.06,-55); scene.add(note2);
 
   var key = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.5), new THREE.MeshStandardMaterial({color:0xffd700, emissive:0x333300}));
@@ -307,21 +308,21 @@ var concreteColor = new THREE.MeshStandardMaterial({color: 0x555555, roughness: 
   var rWall3 = new THREE.Mesh(new THREE.PlaneGeometry(30,5), wallMat); rWall3.rotation.y = -Math.PI/2; rWall3.position.set(5,2.5,-80); scene.add(rWall3);
   var ceil3 = new THREE.Mesh(new THREE.PlaneGeometry(10,30), wallMat); ceil3.rotation.x = Math.PI/2; ceil3.position.y = 5; ceil3.position.z = -80; scene.add(ceil3);
 
-  var machineBase = new THREE.Mesh(new THREE.BoxGeometry(2,1,1), new THREE.MeshStandardMaterial({color:0x444})); machineBase.position.set(0, 0.5, -75); scene.add(machineBase);
-  var machineTop = new THREE.Mesh(new THREE.BoxGeometry(1.5,1,0.5), new THREE.MeshStandardMaterial({color:0x666})); machineTop.position.set(0, 1.5, -75); scene.add(machineTop);
+  var machineBase = new THREE.Mesh(new THREE.BoxGeometry(2,1,1), metalMat); machineBase.position.set(0, 0.5, -75); scene.add(machineBase);
+  var machineTop = new THREE.Mesh(new THREE.BoxGeometry(1.5,1,0.5), metalMat); machineTop.position.set(0, 1.5, -75); scene.add(machineTop);
   
   function makeMachine(x, z) {
-    var base = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1, 1), new THREE.MeshStandardMaterial({color: 0x333333}));
+    var base = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1, 1), metalMat);
     base.position.set(x, 0.5, z); scene.add(base);
-    var top = new THREE.Mesh(new THREE.BoxGeometry(1, 0.8, 0.5), new THREE.MeshStandardMaterial({color: 0x555555}));
+    var top = new THREE.Mesh(new THREE.BoxGeometry(1, 0.8, 0.5), metalMat);
     top.position.set(x, 1.4, z); scene.add(top);
-    var pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5, 8), new THREE.MeshStandardMaterial({color: 0x666666}));
+    var pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5, 8), metalMat);
     pipe.position.set(x + 0.5, 2.5, z); scene.add(pipe);
   }
   makeMachine(-3.5, -70); makeMachine(3.5, -70); makeMachine(-3.5, -90); makeMachine(3.5, -90);
 
-  var scanTable = new THREE.Mesh(new THREE.BoxGeometry(1.5,0.1,1), boxMat); scanTable.position.set(-3, 1.0, -85); scene.add(scanTable);
-  [[-3.6,-84.6],[-2.4,-84.6],[-3.6,-85.4],[-2.4,-85.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), boxMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
+  var scanTable = new THREE.Mesh(new THREE.BoxGeometry(1.5,0.1,1), metalMat); scanTable.position.set(-3, 1.0, -85); scene.add(scanTable);
+  [[-3.6,-84.6],[-2.4,-84.6],[-3.6,-85.4],[-2.4,-85.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), metalMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
 
   var toy = new THREE.Mesh(new THREE.BoxGeometry(0.3,0.3,0.3), new THREE.MeshStandardMaterial({color:0xff99cc}));
   toy.position.set(-3, 1.2, -85); toy.visible = false; scene.add(toy);
@@ -346,7 +347,7 @@ var concreteColor = new THREE.MeshStandardMaterial({color: 0x555555, roughness: 
   // --- КОМНАТА 4 (Обрыв) ---
   var floor4a = new THREE.Mesh(new THREE.PlaneGeometry(10,15), floorMat); floor4a.rotation.x = -Math.PI/2; floor4a.position.set(0, 0, -132.5); scene.add(floor4a);
   var floor4b = new THREE.Mesh(new THREE.PlaneGeometry(10,15), floorMat); floor4b.rotation.x = -Math.PI/2; floor4b.position.set(0, 0, -152.5); scene.add(floor4b);
-  var bridge = new THREE.Mesh(new THREE.PlaneGeometry(3,10), new THREE.MeshStandardMaterial({color:0x3a2a2a})); bridge.rotation.x = -Math.PI/2; bridge.position.set(0, 0.1, -142.5); scene.add(bridge);
+  var bridge = new THREE.Mesh(new THREE.PlaneGeometry(3,10), concreteMat); bridge.rotation.x = -Math.PI/2; bridge.position.set(0, 0.1, -142.5); scene.add(bridge);
   var lWall4 = new THREE.Mesh(new THREE.PlaneGeometry(35,5), wallMat); lWall4.rotation.y = Math.PI/2; lWall4.position.set(-5,2.5,-142.5); scene.add(lWall4);
   var rWall4 = new THREE.Mesh(new THREE.PlaneGeometry(35,5), wallMat); rWall4.rotation.y = -Math.PI/2; rWall4.position.set(5,2.5,-142.5); scene.add(rWall4);
   var ceil4 = new THREE.Mesh(new THREE.PlaneGeometry(10,35), wallMat); ceil4.rotation.x = Math.PI/2; ceil4.position.y = 5; ceil4.position.z = -142.5; scene.add(ceil4);
