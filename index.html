@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime v0.13</title>
+<title>CreamTime v0.14 (Textures)</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
@@ -102,6 +102,7 @@
   var lightHall = new THREE.PointLight(0xff0000, 2, 40); lightHall.position.set(0, 4, -105); scene.add(lightHall); 
   var light4 = new THREE.PointLight(0xff0000, 2, 30); light4.position.set(0, 4, -130); scene.add(light4); 
 
+  // --- ТЕКСТУРЫ ---
   var canvasFloor = document.createElement('canvas'); canvasFloor.width = 128; canvasFloor.height = 128;
   var ctxFloor = canvasFloor.getContext('2d'); ctxFloor.fillStyle = '#222'; ctxFloor.fillRect(0, 0, 128, 128); ctxFloor.strokeStyle = '#111'; ctxFloor.lineWidth = 4; ctxFloor.strokeRect(0, 0, 128, 128);
   var texFloor = new THREE.CanvasTexture(canvasFloor); texFloor.wrapS = texFloor.wrapT = THREE.RepeatWrapping; texFloor.repeat.set(10, 40);
@@ -122,12 +123,32 @@
   for(let i=0; i<80; i++) { ctxRust.fillStyle = Math.random() > 0.5 ? '#331a08' : '#6b4220'; ctxRust.fillRect(Math.random()*64, Math.random()*64, 3, 3); }
   var texRust = new THREE.CanvasTexture(canvasRust); texRust.wrapS = texRust.wrapT = THREE.RepeatWrapping;
 
+  // НОВЫЕ ТЕКСТУРЫ
+  var canvasWood = document.createElement('canvas'); canvasWood.width = 128; canvasWood.height = 128;
+  var ctxWood = canvasWood.getContext('2d'); ctxWood.fillStyle = '#3e2723'; ctxWood.fillRect(0, 0, 128, 128);
+  ctxWood.fillStyle = '#2d1b18'; for(let i=0; i<40; i++) { ctxWood.fillRect(0, Math.random()*128, 128, Math.random()*4); }
+  var texWood = new THREE.CanvasTexture(canvasWood); texWood.wrapS = texWood.wrapT = THREE.RepeatWrapping;
+
+  var canvasMetal = document.createElement('canvas'); canvasMetal.width = 128; canvasMetal.height = 128;
+  var ctxMetal = canvasMetal.getContext('2d'); ctxMetal.fillStyle = '#4f4f4f'; ctxMetal.fillRect(0, 0, 128, 128);
+  for(let i=0; i<50; i++) { ctxMetal.fillStyle = Math.random() > 0.5 ? '#3a3a3a' : '#6a6a6a'; ctxMetal.fillRect(Math.random()*128, Math.random()*128, Math.random()*10, Math.random()*10); }
+  var texMetal = new THREE.CanvasTexture(canvasMetal); texMetal.wrapS = texMetal.wrapT = THREE.RepeatWrapping;
+
+  var canvasConcrete = document.createElement('canvas'); canvasConcrete.width = 128; canvasConcrete.height = 128;
+  var ctxConcrete = canvasConcrete.getContext('2d'); ctxConcrete.fillStyle = '#2a2a2a'; ctxConcrete.fillRect(0, 0, 128, 128);
+  for(let i=0; i<200; i++) { ctxConcrete.fillStyle = Math.random() > 0.5 ? '#1f1f1f' : '#383838'; ctxConcrete.fillRect(Math.random()*128, Math.random()*128, 2, 2); }
+  var texConcrete = new THREE.CanvasTexture(canvasConcrete); texConcrete.wrapS = texConcrete.wrapT = THREE.RepeatWrapping;
+
+  // МАТЕРИАЛЫ
   var floorMat = new THREE.MeshStandardMaterial({ map: texFloor, roughness: 0.9 });
   var wallMat = new THREE.MeshStandardMaterial({ map: texWall, roughness: 0.9 });
   var doorMat = new THREE.MeshStandardMaterial({ color: 0x2a1a1a, roughness: 0.7 });
   var boxMat = new THREE.MeshStandardMaterial({ color: 0x8B5A2B, roughness: 0.9 });
   var factoryMat = new THREE.MeshStandardMaterial({ map: texBrick, roughness: 0.9 });
   var pipeMat = new THREE.MeshStandardMaterial({ map: texRust, roughness: 0.7 });
+  var woodMat = new THREE.MeshStandardMaterial({ map: texWood, roughness: 0.8 });
+  var metalMat = new THREE.MeshStandardMaterial({ map: texMetal, metalness: 0.6, roughness: 0.4 });
+  var concreteMat = new THREE.MeshStandardMaterial({ map: texConcrete, roughness: 0.95 });
 
   var grass = new THREE.Mesh(new THREE.PlaneGeometry(150,150), new THREE.MeshStandardMaterial({color:0x0a1a0a})); grass.rotation.x = -Math.PI/2; grass.position.y = -0.1; scene.add(grass);
   var road = new THREE.Mesh(new THREE.PlaneGeometry(8,100), new THREE.MeshStandardMaterial({color:0x151515})); road.rotation.x = -Math.PI/2; road.position.z = 20; scene.add(road);
