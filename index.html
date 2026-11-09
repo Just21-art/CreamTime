@@ -206,10 +206,11 @@
   var wall1b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall1b.position.set(3,2.5,-40); scene.add(wall1b);
   var endDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); endDoor.position.set(0,2,-40); scene.add(endDoor);
  // --- КОМНАТА 1 (ОХРАННИК, WELCOME, СТОЛЫ И СТУЛЬЯ) ---
-  var table1 = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), boxMat); table1.position.set(-2,1.0,-25); scene.add(table1);
-  [[-2.9,-24.6],[-1.1,-24.6],[-2.9,-25.4],[-1.1,-25.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), boxMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
-  var note1 = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.02,0.3), new THREE.MeshStandardMaterial({color:0xffff99,emissive:0x333300})); note1.position.set(-2,1.06,-25); scene.add(note1);
-
+  // Простые красивые материалы
+var woodColor = new THREE.MeshStandardMaterial({color: 0x8B4513, roughness: 0.7}); // Коричневое дерево
+var metalColor = new THREE.MeshStandardMaterial({color: 0x777777, metalness: 0.8, roughness: 0.2}); // Блестящий металл
+var concreteColor = new THREE.MeshStandardMaterial({color: 0x555555, roughness: 0.9}); // Серый бетон
+ 
   var whiteWall = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 0.2), new THREE.MeshStandardMaterial({color: 0xdddddd}));
   whiteWall.position.set(0, 2.5, -34); scene.add(whiteWall);
   
