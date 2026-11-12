@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime v0.15</title>
+<title>CreamTime v0.16 (New Monster)</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
@@ -123,7 +123,6 @@
   for(let i=0; i<80; i++) { ctxRust.fillStyle = Math.random() > 0.5 ? '#331a08' : '#6b4220'; ctxRust.fillRect(Math.random()*64, Math.random()*64, 3, 3); }
   var texRust = new THREE.CanvasTexture(canvasRust); texRust.wrapS = texRust.wrapT = THREE.RepeatWrapping;
 
-  // НОВЫЕ ТЕКСТУРЫ
   var canvasWood = document.createElement('canvas'); canvasWood.width = 128; canvasWood.height = 128;
   var ctxWood = canvasWood.getContext('2d'); ctxWood.fillStyle = '#5d4037'; ctxWood.fillRect(0, 0, 128, 128);
   ctxWood.fillStyle = '#4e342e'; for(let i=0; i<40; i++) { ctxWood.fillRect(0, Math.random()*128, 128, Math.random()*4); }
@@ -146,8 +145,6 @@
   var boxMat = new THREE.MeshStandardMaterial({ color: 0x8B5A2B, roughness: 0.9 });
   var factoryMat = new THREE.MeshStandardMaterial({ map: texBrick, roughness: 0.9 });
   var pipeMat = new THREE.MeshStandardMaterial({ map: texRust, roughness: 0.7 });
-  
-  // НОВЫЕ МАТЕРИАЛЫ (с добавлением света для видимости)
   var woodMat = new THREE.MeshStandardMaterial({ map: texWood, roughness: 0.8, color: 0xcccccc }); 
   var metalMat = new THREE.MeshStandardMaterial({ map: texMetal, metalness: 0.8, roughness: 0.3 });
   var concreteMat = new THREE.MeshStandardMaterial({ map: texConcrete, roughness: 0.95 });
@@ -207,7 +204,8 @@
   var wall1a = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall1a.position.set(-3,2.5,-40); scene.add(wall1a);
   var wall1b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall1b.position.set(3,2.5,-40); scene.add(wall1b);
   var endDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); endDoor.position.set(0,2,-40); scene.add(endDoor);
- // --- КОМНАТА 1 (ОХРАННИК, WELCOME, СТОЛЫ И СТУЛЬЯ) ---
+
+  // --- КОМНАТА 1 (ОХРАННИК, WELCOME, СТОЛЫ И СТУЛЬЯ) ---
   var table1 = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), woodMat); table1.position.set(-2,1.0,-25); scene.add(table1);
   [[-2.9,-24.6],[-1.1,-24.6],[-2.9,-25.4],[-1.1,-25.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), woodMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
   var note1 = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.02,0.3), new THREE.MeshStandardMaterial({color:0xffff99,emissive:0x333300})); note1.position.set(-2,1.06,-25); scene.add(note1);
@@ -274,38 +272,15 @@
   var collected = 0;
 
   // --- КОМНАТА 2 (Статуя) ---
-  // --- НОВАЯ СТАТУЯ МОРОЖЕНОСЧИКА (КОПИЯ МОНСТРА) ---
-var statue = monster.clone(); // Клонируем нового монстра
-statue.position.set(0, 0, -50); // Ставим его на место статуи
-statue.visible = true; // Делаем его видимым
-scene.add(statue);
-
-// Важно: у клона отключаем анимацию/движение (он просто стоит)
+  var floor2 = new THREE.Mesh(new THREE.PlaneGeometry(10,25), floorMat); floor2.rotation.x = -Math.PI/2; floor2.position.z = -52.5; scene.add(floor2);
+  var lWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); lWall2.rotation.y = Math.PI/2; lWall2.position.set(-5,2.5,-52.5); scene.add(lWall2);
+  var rWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); rWall2.rotation.y = -Math.PI/2; rWall2.position.set(5,2.5,-52.5); scene.add(rWall2);
+  var ceil2 = new THREE.Mesh(new THREE.PlaneGeometry(10,25), wallMat); ceil2.rotation.x = Math.PI/2; ceil2.position.y = 5; ceil2.position.z = -52.5; scene.add(ceil2);
 
   var wall2a = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall2a.position.set(-3,2.5,-65); scene.add(wall2a);
   var wall2b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall2b.position.set(3,2.5,-65); scene.add(wall2b);
   var door2 = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); door2.position.set(0,2,-65); scene.add(door2);
-
-  function crate(x,y,z,s){var b=new THREE.Mesh(new THREE.BoxGeometry(s,s,s),woodMat);b.position.set(x,y+(s/2),z);scene.add(b);}
-  crate(-4,0,-45,1.5); crate(-4,0,-48,1); crate(4,0,-50,2); crate(3.5,0,-60,1.2);
-
-  var table2 = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), woodMat); table2.position.set(0,1.0,-55); scene.add(table2);
-  [[-0.9,-54.6],[0.9,-54.6],[-0.9,-55.4],[0.9,-55.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), woodMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
-  var note2 = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.02,0.3), new THREE.MeshStandardMaterial({color:0xffff99,emissive:0x333300})); note2.position.set(0,1.06,-55); scene.add(note2);
-
-  var key = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.5), new THREE.MeshStandardMaterial({color:0xffd700, emissive:0x333300}));
-  key.position.set(3.5, 1.2, -62); scene.add(key);
-  var keyTaken = false;
-
-  var statue = new THREE.Group();
-  var sBody = new THREE.Mesh(new THREE.BoxGeometry(1,2,1), new THREE.MeshStandardMaterial({color:0xeeeeee})); sBody.position.y=1; statue.add(sBody);
-  var sHead = new THREE.Mesh(new THREE.BoxGeometry(1.2,1,1.2), new THREE.MeshStandardMaterial({color:0xff9999})); sHead.position.y=2.5; statue.add(sHead);
-  var eyeMat = new THREE.MeshStandardMaterial({color:0});
-  var e1 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e1.position.set(-0.3,2.6,0.61); statue.add(e1);
-  var e2 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e2.position.set(0.3,2.6,0.61); statue.add(e2);
-  statue.position.set(0, 0, -50); scene.add(statue);
-
-  // --- КОМНАТА 3 (Фабрика) ---
+ // --- КОМНАТА 3 (Фабрика) ---
   var floor3 = new THREE.Mesh(new THREE.PlaneGeometry(10,30), floorMat); floor3.rotation.x = -Math.PI/2; floor3.position.z = -80; scene.add(floor3);
   var lWall3 = new THREE.Mesh(new THREE.PlaneGeometry(30,5), wallMat); lWall3.rotation.y = Math.PI/2; lWall3.position.set(-5,2.5,-80); scene.add(lWall3);
   var rWall3 = new THREE.Mesh(new THREE.PlaneGeometry(30,5), wallMat); rWall3.rotation.y = -Math.PI/2; rWall3.position.set(5,2.5,-80); scene.add(rWall3);
@@ -358,83 +333,50 @@ scene.add(statue);
 
   var exitDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x00aa00})); exitDoor.position.set(0,2,-159.8); scene.add(exitDoor);
 
-  // --- НОВЫЙ МОРОЖЕНОСЧИК (Реалистичный) ---
-var monster = new THREE.Group();
+  // --- СОЗДАЕМ НОВОГО МОРОЖЕНОСЧИКА ---
+  var monster = new THREE.Group();
+  var iceCreamMat = new THREE.MeshStandardMaterial({color: 0xffccaa, roughness: 0.4});
+  var coneMat = new THREE.MeshStandardMaterial({color: 0xd2a679, roughness: 0.9});
+  var bloodMat = new THREE.MeshStandardMaterial({color: 0xcc0000, roughness: 0.6});
+  var teethMat = new THREE.MeshStandardMaterial({color: 0xffffff, roughness: 0.2});
+  var buttonMat = new THREE.MeshStandardMaterial({color: 0x111111, roughness: 0.3});
 
-// Материалы для монстра
-var iceCreamMat = new THREE.MeshStandardMaterial({color: 0xffccaa, roughness: 0.4}); // Телесный/кремовый
-var coneMat = new THREE.MeshStandardMaterial({color: 0xd2a679, roughness: 0.9}); // Вафельный рожок
-var bloodMat = new THREE.MeshStandardMaterial({color: 0xcc0000, roughness: 0.6}); // Кроваво-красный
-var teethMat = new THREE.MeshStandardMaterial({color: 0xffffff, roughness: 0.2}); // Белые зубы
-var buttonMat = new THREE.MeshStandardMaterial({color: 0x111111, roughness: 0.3}); // Черные пуговицы
+  // Ноги
+  var legL = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.2, 8), iceCreamMat);
+  legL.position.set(-0.4, 0.6, 0); monster.add(legL);
+  var legR = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.2, 8), iceCreamMat);
+  legR.position.set(0.4, 0.6, 0); monster.add(legR);
+  // Тело
+  var bodyCone = new THREE.Mesh(new THREE.ConeGeometry(0.7, 2, 8), coneMat);
+  bodyCone.position.y = 2.0; bodyCone.rotation.x = Math.PI; monster.add(bodyCone);
+  // Голова
+  var headSphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2), iceCreamMat);
+  headSphere.position.y = 3.1; monster.add(headSphere);
+  // Глаза
+  var eyeGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.05, 12);
+  var eyeL = new THREE.Mesh(eyeGeo, buttonMat); eyeL.position.set(-0.3, 3.3, 0.75); eyeL.rotation.x = Math.PI / 2; monster.add(eyeL);
+  var eyeR = new THREE.Mesh(eyeGeo, buttonMat); eyeR.position.set(0.3, 3.3, 0.75); eyeR.rotation.x = Math.PI / 2; monster.add(eyeR);
+  // Рот и зубы
+  var mouth = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.1), bloodMat); mouth.position.set(0, 2.9, 0.75); monster.add(mouth);
+  for (var i = -2; i <= 2; i++) {
+      var tooth = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.15, 4), teethMat);
+      tooth.position.set(i * 0.12, 2.95, 0.78); tooth.rotation.x = Math.PI; monster.add(tooth);
+  }
+  // Руки
+  var armL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.5, 8), iceCreamMat);
+  armL.position.set(-0.8, 2.2, 0.5); armL.rotation.x = Math.PI / 3; armL.rotation.z = Math.PI / 6; monster.add(armL);
+  var armR = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.5, 8), iceCreamMat);
+  armR.position.set(0.8, 2.2, 0.5); armR.rotation.x = Math.PI / 3; armR.rotation.z = -Math.PI / 6; monster.add(armR);
+  var handL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), iceCreamMat); handL.position.set(-1.2, 2.6, 1.2); monster.add(handL);
+  var handR = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), iceCreamMat); handR.position.set(1.2, 2.6, 1.2); monster.add(handR);
 
-// 1. Ноги (тонкие цилиндры)
-var legL = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.2, 8), iceCreamMat);
-legL.position.set(-0.4, 0.6, 0); monster.add(legL);
-var legR = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.2, 8), iceCreamMat);
-legR.position.set(0.4, 0.6, 0); monster.add(legR);
-
-// 2. Тело (Рожок мороженого - перевернутый конус)
-var bodyCone = new THREE.Mesh(new THREE.ConeGeometry(0.7, 2, 8), coneMat);
-bodyCone.position.y = 2.0; 
-bodyCone.rotation.x = Math.PI; // Переворачиваем конус
-monster.add(bodyCone);
-
-// 3. Голова (Шапка мороженого - полусфера)
-var headSphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2), iceCreamMat);
-headSphere.position.y = 3.1; 
-monster.add(headSphere);
-
-// 4. Глаза-пуговицы
-var eyeGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.05, 12);
-var eyeL = new THREE.Mesh(eyeGeo, buttonMat);
-eyeL.position.set(-0.3, 3.3, 0.75);
-eyeL.rotation.x = Math.PI / 2;
-monster.add(eyeL);
-
-var eyeR = new THREE.Mesh(eyeGeo, buttonMat);
-eyeR.position.set(0.3, 3.3, 0.75);
-eyeR.rotation.x = Math.PI / 2;
-monster.add(eyeR);
-
-// 5. Зубастый рот (Красная полость + белые зубы)
-var mouth = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.1), bloodMat);
-mouth.position.set(0, 2.9, 0.75);
-monster.add(mouth);
-
-// Зубы (просто несколько маленьких треугольников/конусов)
-for (var i = -2; i <= 2; i++) {
-    var tooth = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.15, 4), teethMat);
-    tooth.position.set(i * 0.12, 2.95, 0.78);
-    tooth.rotation.x = Math.PI; // Зубы вниз
-    monster.add(tooth);
-}
-
-// 6. Руки (длинные, вытянутые вперед)
-var armL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.5, 8), iceCreamMat);
-armL.position.set(-0.8, 2.2, 0.5);
-armL.rotation.x = Math.PI / 3; // Вытянуты вперед
-armL.rotation.z = Math.PI / 6;
-monster.add(armL);
-
-var armR = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.5, 8), iceCreamMat);
-armR.position.set(0.8, 2.2, 0.5);
-armR.rotation.x = Math.PI / 3;
-armR.rotation.z = -Math.PI / 6;
-monster.add(armR);
-
-// Ладони (маленькие сферы на концах рук)
-var handL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), iceCreamMat);
-handL.position.set(-1.2, 2.6, 1.2); monster.add(handL);
-var handR = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), iceCreamMat);
-handR.position.set(1.2, 2.6, 1.2); monster.add(handR);
-
-// Позиционируем всего монстра
-monster.position.set(0, 0, -75); 
-monster.visible=false; 
-scene.add(monster);
-  
   monster.position.set(0, 0, -75); monster.visible=false; scene.add(monster);
+
+  // --- СТАТУЯ (копия монстра для 2-й комнаты) ---
+  var statue = monster.clone();
+  statue.position.set(0, 0, -50); 
+  statue.visible = true; 
+  scene.add(statue);
 
   // --- ЛОГИКА ---
   var moveF=false, moveB=false, moveL=false, moveR=false, isRun=false;
@@ -548,6 +490,18 @@ scene.add(monster);
     }
   };
   document.getElementById('closeMod').onclick = function() { document.getElementById('modal').style.display='none'; };
+
+  // --- НЕДОСТАЮЩИЕ ПЕРЕМЕННЫЕ И ЛОГИКА КЛЮЧА ---
+  var key = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.5), new THREE.MeshStandardMaterial({color:0xffd700, emissive:0x333300}));
+  key.position.set(3.5, 1.2, -62); scene.add(key);
+  var keyTaken = false;
+  
+  function crate(x,y,z,s){var b=new THREE.Mesh(new THREE.BoxGeometry(s,s,s),woodMat);b.position.set(x,y+(s/2),z);scene.add(b);}
+  crate(-4,0,-45,1.5); crate(-4,0,-48,1); crate(4,0,-50,2); crate(3.5,0,-60,1.2);
+  
+  var table2 = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), woodMat); table2.position.set(0,1.0,-55); scene.add(table2);
+  [[-0.9,-54.6],[0.9,-54.6],[-0.9,-55.4],[0.9,-55.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), woodMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
+  var note2 = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.02,0.3), new THREE.MeshStandardMaterial({color:0xffff99,emissive:0x333300})); note2.position.set(0,1.06,-55); scene.add(note2);
 
   var clock = new THREE.Clock();
   function animate() {
