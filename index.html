@@ -355,11 +355,81 @@
 
   var exitDoor = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), new THREE.MeshStandardMaterial({color:0x00aa00})); exitDoor.position.set(0,2,-159.8); scene.add(exitDoor);
 
-  var monster = new THREE.Group();
-  var mBody = new THREE.Mesh(new THREE.BoxGeometry(1,2,1), new THREE.MeshStandardMaterial({color:0xeeeeee})); mBody.position.y=1; monster.add(mBody);
-  var mHead = new THREE.Mesh(new THREE.BoxGeometry(1.2,1,1.2), new THREE.MeshStandardMaterial({color:0xff9999})); mHead.position.y=2.5; monster.add(mHead);
-  var e3 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e3.position.set(-0.3,2.6,0.61); monster.add(e3);
-  var e4 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.1), eyeMat); e4.position.set(0.3,2.6,0.61); monster.add(e4);
+  // --- НОВЫЙ МОРОЖЕНОСЧИК (Реалистичный) ---
+var monster = new THREE.Group();
+
+// Материалы для монстра
+var iceCreamMat = new THREE.MeshStandardMaterial({color: 0xffccaa, roughness: 0.4}); // Телесный/кремовый
+var coneMat = new THREE.MeshStandardMaterial({color: 0xd2a679, roughness: 0.9}); // Вафельный рожок
+var bloodMat = new THREE.MeshStandardMaterial({color: 0xcc0000, roughness: 0.6}); // Кроваво-красный
+var teethMat = new THREE.MeshStandardMaterial({color: 0xffffff, roughness: 0.2}); // Белые зубы
+var buttonMat = new THREE.MeshStandardMaterial({color: 0x111111, roughness: 0.3}); // Черные пуговицы
+
+// 1. Ноги (тонкие цилиндры)
+var legL = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.2, 8), iceCreamMat);
+legL.position.set(-0.4, 0.6, 0); monster.add(legL);
+var legR = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.2, 8), iceCreamMat);
+legR.position.set(0.4, 0.6, 0); monster.add(legR);
+
+// 2. Тело (Рожок мороженого - перевернутый конус)
+var bodyCone = new THREE.Mesh(new THREE.ConeGeometry(0.7, 2, 8), coneMat);
+bodyCone.position.y = 2.0; 
+bodyCone.rotation.x = Math.PI; // Переворачиваем конус
+monster.add(bodyCone);
+
+// 3. Голова (Шапка мороженого - полусфера)
+var headSphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2), iceCreamMat);
+headSphere.position.y = 3.1; 
+monster.add(headSphere);
+
+// 4. Глаза-пуговицы
+var eyeGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.05, 12);
+var eyeL = new THREE.Mesh(eyeGeo, buttonMat);
+eyeL.position.set(-0.3, 3.3, 0.75);
+eyeL.rotation.x = Math.PI / 2;
+monster.add(eyeL);
+
+var eyeR = new THREE.Mesh(eyeGeo, buttonMat);
+eyeR.position.set(0.3, 3.3, 0.75);
+eyeR.rotation.x = Math.PI / 2;
+monster.add(eyeR);
+
+// 5. Зубастый рот (Красная полость + белые зубы)
+var mouth = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.1), bloodMat);
+mouth.position.set(0, 2.9, 0.75);
+monster.add(mouth);
+
+// Зубы (просто несколько маленьких треугольников/конусов)
+for (var i = -2; i <= 2; i++) {
+    var tooth = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.15, 4), teethMat);
+    tooth.position.set(i * 0.12, 2.95, 0.78);
+    tooth.rotation.x = Math.PI; // Зубы вниз
+    monster.add(tooth);
+}
+
+// 6. Руки (длинные, вытянутые вперед)
+var armL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.5, 8), iceCreamMat);
+armL.position.set(-0.8, 2.2, 0.5);
+armL.rotation.x = Math.PI / 3; // Вытянуты вперед
+armL.rotation.z = Math.PI / 6;
+monster.add(armL);
+
+var armR = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.5, 8), iceCreamMat);
+armR.position.set(0.8, 2.2, 0.5);
+armR.rotation.x = Math.PI / 3;
+armR.rotation.z = -Math.PI / 6;
+monster.add(armR);
+
+// Ладони (маленькие сферы на концах рук)
+var handL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), iceCreamMat);
+handL.position.set(-1.2, 2.6, 1.2); monster.add(handL);
+var handR = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), iceCreamMat);
+handR.position.set(1.2, 2.6, 1.2); monster.add(handR);
+
+// Позиционируем всего монстра
+monster.position.set(0, 0, -75); 
+monster.visible=false; 
+scene.add(monster);
   
   monster.position.set(0, 0, -75); monster.visible=false; scene.add(monster);
 
