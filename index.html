@@ -274,10 +274,13 @@
   var collected = 0;
 
   // --- КОМНАТА 2 (Статуя) ---
-  var floor2 = new THREE.Mesh(new THREE.PlaneGeometry(10,25), floorMat); floor2.rotation.x = -Math.PI/2; floor2.position.z = -52.5; scene.add(floor2);
-  var lWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); lWall2.rotation.y = Math.PI/2; lWall2.position.set(-5,2.5,-52.5); scene.add(lWall2);
-  var rWall2 = new THREE.Mesh(new THREE.PlaneGeometry(25,5), wallMat); rWall2.rotation.y = -Math.PI/2; rWall2.position.set(5,2.5,-52.5); scene.add(rWall2);
-  var ceil2 = new THREE.Mesh(new THREE.PlaneGeometry(10,25), wallMat); ceil2.rotation.x = Math.PI/2; ceil2.position.y = 5; ceil2.position.z = -52.5; scene.add(ceil2);
+  // --- НОВАЯ СТАТУЯ МОРОЖЕНОСЧИКА (КОПИЯ МОНСТРА) ---
+var statue = monster.clone(); // Клонируем нового монстра
+statue.position.set(0, 0, -50); // Ставим его на место статуи
+statue.visible = true; // Делаем его видимым
+scene.add(statue);
+
+// Важно: у клона отключаем анимацию/движение (он просто стоит)
 
   var wall2a = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall2a.position.set(-3,2.5,-65); scene.add(wall2a);
   var wall2b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall2b.position.set(3,2.5,-65); scene.add(wall2b);
