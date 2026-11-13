@@ -3,19 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime v0.16 (New Monster)</title>
+<title>CreamTime v0.19 (New Menu)</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
   canvas { display:block; }
-  .screen { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#0a0a0a,#000); display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; z-index:100; }
-  .hidden { display:none !important; }
-  h1 { font-size:52px; color:#ff3333; letter-spacing:4px; text-shadow:0 0 20px rgba(255,51,51,0.4); margin-bottom:5px; }
-  .sub { color:#666; font-size:16px; margin-bottom:40px; letter-spacing:2px; }
-  .btn { padding:15px; font-size:20px; border:2px solid #ff3333; background:rgba(255,51,51,0.1); color:white; border-radius:10px; font-weight:bold; cursor:pointer; width:80%; max-width:300px; margin-bottom:15px; }
+  
+  /* --- НОВОЕ МЕНЮ --- */
+  #menu {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background: radial-gradient(circle at 20% 50%, #1a0a0a 0%, #000 100%);
+    display:flex; flex-direction:row; z-index:100;
+    color:white; overflow:hidden;
+  }
+
+  /* Левая часть с кнопками */
+  .menu-left {
+    width: 50%; height: 100%;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    padding-left: 20px;
+    z-index: 2;
+  }
+
+  .game-title {
+    font-size: 42px; color:#ff3333; letter-spacing:4px; 
+    text-shadow:0 0 20px rgba(255,51,51,0.8); margin-bottom:5px;
+    text-align: center;
+  }
+  .game-subtitle {
+    color:#ccc; font-size:16px; letter-spacing:2px; margin-bottom:40px;
+    text-align: center;
+  }
+
+  .btn { 
+    padding:15px; font-size:20px; border:2px solid #ff3333; 
+    background:rgba(255,51,51,0.1); color:white; border-radius:10px; 
+    font-weight:bold; cursor:pointer; width:80%; max-width:300px; 
+    margin-bottom:15px; transition: 0.2s;
+  }
   .btn:active { transform:scale(0.95); background:#ff3333; color:#000; }
   .btn-cam { border-color:#00ff00; background:rgba(0,255,0,0.1); }
   .btn-cam:active { background:#00ff00; }
+
+  /* Правая часть с монстром */
+  .menu-right {
+    width: 50%; height: 100%;
+    position: relative;
+    z-index: 1;
+    /* ВСТАВЛЕНА ТВОЯ КАРТИНКА */
+    background-image: url('https://i.ibb.co/x8sDz1pF/In-Shot-20261113-221106131.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    mask-image: linear-gradient(to right, transparent 0%, black 25%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 25%);
+  }
+
+  .footer-text {
+    position: absolute; bottom: 20px; left: 0; width: 50%; text-align: center;
+    color: #555; font-size: 14px; letter-spacing: 2px; z-index: 3;
+  }
+
+  /* --- ОСТАЛЬНЫЕ ЭКРАНЫ --- */
+  .screen { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#0a0a0a,#000); display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; z-index:100; }
+  .hidden { display:none !important; }
+  
+  h1 { font-size:52px; color:#ff3333; letter-spacing:4px; text-shadow:0 0 20px rgba(255,51,51,0.4); margin-bottom:5px; }
+  .sub { color:#666; font-size:16px; margin-bottom:40px; letter-spacing:2px; }
+
   #hud { position:absolute; top:15px; left:15px; color:#ccc; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:18px; font-weight:bold; }
   #task { position:absolute; top:45px; left:15px; color:#ffaa00; z-index:10; display:none; text-shadow:1px 1px 3px #000; font-size:16px; font-weight:bold; }
   #pauseBtn { position:absolute; top:15px; right:15px; padding:10px 15px; background:rgba(255,170,0,0.8); border:2px solid #fff; border-radius:10px; font-weight:bold; font-size:18px; display:none; z-index:30; cursor:pointer; }
@@ -33,12 +88,22 @@
 </style>
 </head>
 <body>
-<div id="menu" class="screen">
-  <h1>CREAMTIME</h1>
-  <p class="sub">ЧАСТЬ 1: ЗАБРОШЕННАЯ ФАБРИКА</p>
-  <button class="btn" id="startBtn">▶ ИГРАТЬ</button>
-  <button class="btn btn-cam" id="camBtn">🎥 СВОБОДНЫЙ ПОЛЕТ</button>
+
+<!-- НОВОЕ ГЛАВНОЕ МЕНЮ -->
+<div id="menu">
+  <div class="menu-left">
+    <h1 class="game-title">CREAMTIME</h1>
+    <p class="game-subtitle">ГЛАВА 1: ЗАБРОШЕННАЯ ФАБРИКА</p>
+    <button class="btn" id="startBtn">▶ ИГРАТЬ</button>
+    <button class="btn btn-cam" id="camBtn">🎥 СВОБОДНЫЙ ПОЛЕТ</button>
+  </div>
+  
+  <div class="menu-right"></div>
+  
+  <div class="footer-text">2026</div>
 </div>
+
+<!-- ОСТАЛЬНЫЕ ЭКРАНЫ -->
 <div id="pauseScreen" class="screen hidden">
   <h1 style="color:#ffaa00; margin-bottom:30px;">ПАУЗА</h1>
   <button class="btn" id="resumeBtn">▶ ПРОДОЛЖИТЬ</button>
@@ -69,7 +134,6 @@
 </div>
 <div id="win">
   <h1 style="color:#ffaa00; font-size:32px; margin-bottom:10px; text-shadow: 0 0 10px #ffaa00;">ГЛАВА 1 ПРОЙДЕНА!</h1>
-  
   <div style="text-align:center; color:#ccc; font-size:14px; margin-bottom:25px; line-height:1.6;">
     <p style="color:#fff; font-weight:bold; font-size:16px;">Создал: Just21-art</p>
     <p>Разработка велась с 25.10.2026 до 23.11.2026</p>
@@ -77,16 +141,14 @@
       На эту игру было потрачено много сил, поэтому поддержите меня, подпишитесь на мои соцсети, они указаны в меню профиля.
     </p>
   </div>
-
   <h2 style="color:#ff3333; font-size:24px; margin-bottom:20px; text-shadow: 0 0 10px #ff3333;">Глава 2: Скоро</h2>
-  
   <button onclick="location.reload()" style="padding:12px 40px; background:#ffaa00; border:none; font-weight:bold; border-radius:10px; font-size:18px; cursor:pointer;">В МЕНЮ</button>
-  
   <p style="position:absolute; bottom:20px; color:#555; font-size:12px; letter-spacing:2px;">2026</p>
 </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-  var scene = new THREE.Scene();
+ var scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0a15); 
   scene.fog = new THREE.Fog(0x0a0a15, 20, 90); 
   var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
@@ -280,7 +342,8 @@
   var wall2a = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall2a.position.set(-3,2.5,-65); scene.add(wall2a);
   var wall2b = new THREE.Mesh(new THREE.BoxGeometry(4,5,0.2), wallMat); wall2b.position.set(3,2.5,-65); scene.add(wall2b);
   var door2 = new THREE.Mesh(new THREE.BoxGeometry(2,4,0.2), doorMat); door2.position.set(0,2,-65); scene.add(door2);
- // --- КОМНАТА 3 (Фабрика) ---
+
+  // --- КОМНАТА 3 (Фабрика) ---
   var floor3 = new THREE.Mesh(new THREE.PlaneGeometry(10,30), floorMat); floor3.rotation.x = -Math.PI/2; floor3.position.z = -80; scene.add(floor3);
   var lWall3 = new THREE.Mesh(new THREE.PlaneGeometry(30,5), wallMat); lWall3.rotation.y = Math.PI/2; lWall3.position.set(-5,2.5,-80); scene.add(lWall3);
   var rWall3 = new THREE.Mesh(new THREE.PlaneGeometry(30,5), wallMat); rWall3.rotation.y = -Math.PI/2; rWall3.position.set(5,2.5,-80); scene.add(rWall3);
@@ -377,6 +440,18 @@
   statue.position.set(0, 0, -50); 
   statue.visible = true; 
   scene.add(statue);
+
+  // --- НЕДОСТАЮЩИЕ ПЕРЕМЕННЫЕ И ЛОГИКА КЛЮЧА ---
+  var key = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.5), new THREE.MeshStandardMaterial({color:0xffd700, emissive:0x333300}));
+  key.position.set(3.5, 1.2, -62); scene.add(key);
+  var keyTaken = false;
+  
+  function crate(x,y,z,s){var b=new THREE.Mesh(new THREE.BoxGeometry(s,s,s),woodMat);b.position.set(x,y+(s/2),z);scene.add(b);}
+  crate(-4,0,-45,1.5); crate(-4,0,-48,1); crate(4,0,-50,2); crate(3.5,0,-60,1.2);
+  
+  var table2 = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), woodMat); table2.position.set(0,1.0,-55); scene.add(table2);
+  [[-0.9,-54.6],[0.9,-54.6],[-0.9,-55.4],[0.9,-55.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), woodMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
+  var note2 = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.02,0.3), new THREE.MeshStandardMaterial({color:0xffff99,emissive:0x333300})); note2.position.set(0,1.06,-55); scene.add(note2);
 
   // --- ЛОГИКА ---
   var moveF=false, moveB=false, moveL=false, moveR=false, isRun=false;
@@ -490,18 +565,6 @@
     }
   };
   document.getElementById('closeMod').onclick = function() { document.getElementById('modal').style.display='none'; };
-
-  // --- НЕДОСТАЮЩИЕ ПЕРЕМЕННЫЕ И ЛОГИКА КЛЮЧА ---
-  var key = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.5), new THREE.MeshStandardMaterial({color:0xffd700, emissive:0x333300}));
-  key.position.set(3.5, 1.2, -62); scene.add(key);
-  var keyTaken = false;
-  
-  function crate(x,y,z,s){var b=new THREE.Mesh(new THREE.BoxGeometry(s,s,s),woodMat);b.position.set(x,y+(s/2),z);scene.add(b);}
-  crate(-4,0,-45,1.5); crate(-4,0,-48,1); crate(4,0,-50,2); crate(3.5,0,-60,1.2);
-  
-  var table2 = new THREE.Mesh(new THREE.BoxGeometry(2,0.1,1), woodMat); table2.position.set(0,1.0,-55); scene.add(table2);
-  [[-0.9,-54.6],[0.9,-54.6],[-0.9,-55.4],[0.9,-55.4]].forEach(function(p){ var leg = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), woodMat); leg.position.set(p[0],0.5,p[1]); scene.add(leg); });
-  var note2 = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.02,0.3), new THREE.MeshStandardMaterial({color:0xffff99,emissive:0x333300})); note2.position.set(0,1.06,-55); scene.add(note2);
 
   var clock = new THREE.Clock();
   function animate() {
