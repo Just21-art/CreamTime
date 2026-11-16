@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CreamTime v1.0 (Final)</title>
+<title>CreamTime v1.0 (Gloves & Spawn Fix)</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { overflow:hidden; background:#000; font-family:Arial,sans-serif; touch-action:none; }
@@ -56,12 +56,12 @@
   var light3 = new THREE.PointLight(0xffffff, 1.5, 25); light3.position.set(0, 4, -75); scene.add(light3);
   var light4 = new THREE.PointLight(0xff0000, 2, 30); light4.position.set(0, 4, -130); scene.add(light4); 
 
-  // ПЕРЧАТКА (УВЕЛИЧЕНА И БЛИЖЕ)
+  // ПЕРЧАТКА (УВЕЛИЧЕНА И ПРИБЛИЖЕНА)
   var gloveGroup = new THREE.Group(); var gloveMat = new THREE.MeshStandardMaterial({color: 0xffcc00, roughness: 0.5, emissive: 0x332200});
-  gloveGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.7, 0.4), gloveMat)); // Ладонь
-  for(let i=0; i<4; i++) { var f = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.35, 0.12), gloveMat); f.position.set(-0.18 + i*0.12, 0.45, 0.08); gloveGroup.add(f); } // Пальцы
-  var th = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.3, 0.12), gloveMat); th.position.set(0.33, 0.2, 0.08); th.rotation.z = -0.5; gloveGroup.add(th); // Большой палец
-  gloveGroup.position.set(-0.4, -0.4, -0.8); gloveGroup.rotation.y = 0.4; camera.add(gloveGroup); var gloveExt = false; var gloveAnim = 0;
+  gloveGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.7, 0.4), gloveMat));
+  for(let i=0; i<4; i++) { var f = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.35, 0.12), gloveMat); f.position.set(-0.18 + i*0.12, 0.45, 0.08); gloveGroup.add(f); }
+  var th = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.3, 0.12), gloveMat); th.position.set(0.33, 0.2, 0.08); th.rotation.z = -0.5; gloveGroup.add(th);
+  gloveGroup.position.set(-0.45, -0.35, -0.8); gloveGroup.rotation.y = 0.4; camera.add(gloveGroup); var gloveExt = false; var gloveAnim = 0;
 
   // ТЕКСТУРЫ
   var cF = document.createElement('canvas'); cF.width = 128; cF.height = 128; var cxF = cF.getContext('2d'); cxF.fillStyle = '#222'; cxF.fillRect(0,0,128,128); cxF.strokeStyle='#111'; cxF.lineWidth=4; cxF.strokeRect(0,0,128,128);
@@ -249,7 +249,7 @@
     if(isSpectator) { if(flyUp) camera.position.y+=sp*delta*2; if(flyDown) camera.position.y-=sp*delta*2; if(camera.position.y<0.5)camera.position.y=0.5; if(camera.position.y>15)camera.position.y=15; }
 
     var tP = gloveExt ? 1.0 : 0.0; gloveAnim += (tP-gloveAnim)*0.1;
-    if(gloveAnim>0.01) { var hX=-0.4,hY=-0.4,hZ=-0.8; var eX=0.0,eY=-0.2,eZ=-0.8; gloveGroup.position.x=hX+(eX-hX)*gloveAnim; gloveGroup.position.y=hY+(eY-hY)*gloveAnim; gloveGroup.position.z=hZ+(eZ-hZ)*gloveAnim; gloveGroup.rotation.y=0.4-(0.4*gloveAnim); if(gloveAnim<0.1 && (mF||mB||mL||mR)){ gloveGroup.position.y+=Math.sin(Date.now()*0.01)*0.02; gloveGroup.position.x+=Math.cos(Date.now()*0.01)*0.01; } }
+    if(gloveAnim>0.01) { var hX=-0.45,hY=-0.35,hZ=-0.8; var eX=0.0,eY=-0.2,eZ=-0.8; gloveGroup.position.x=hX+(eX-hX)*gloveAnim; gloveGroup.position.y=hY+(eY-hY)*gloveAnim; gloveGroup.position.z=hZ+(eZ-hZ)*gloveAnim; gloveGroup.rotation.y=0.4-(0.4*gloveAnim); if(gloveAnim<0.1 && (mF||mB||mL||mR)){ gloveGroup.position.y+=Math.sin(Date.now()*0.01)*0.02; gloveGroup.position.x+=Math.cos(Date.now()*0.01)*0.01; } }
 
     if(!isSpectator){
       if(camera.position.z>15 || camera.position.z<-159) camera.position.z=oldZ;
