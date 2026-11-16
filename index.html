@@ -56,7 +56,7 @@
   var light3 = new THREE.PointLight(0xffffff, 1.5, 25); light3.position.set(0, 4, -75); scene.add(light3);
   var light4 = new THREE.PointLight(0xff0000, 2, 30); light4.position.set(0, 4, -130); scene.add(light4); 
 
-  // ПЕРЧАТКА (УВЕЛИЧЕНА И ПРИБЛИЖЕНА)
+  // ПЕРЧАТКА (ВИДИМАЯ)
   var gloveGroup = new THREE.Group(); var gloveMat = new THREE.MeshStandardMaterial({color: 0xffcc00, roughness: 0.5, emissive: 0x332200});
   gloveGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.7, 0.4), gloveMat));
   for(let i=0; i<4; i++) { var f = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.35, 0.12), gloveMat); f.position.set(-0.18 + i*0.12, 0.45, 0.08); gloveGroup.add(f); }
@@ -239,7 +239,7 @@
       scanner3Active=true; gloveExt=true; document.getElementById('task').innerText="Дверь открыта!"; 
       setTimeout(()=>{ 
         door3.visible=false; room=4; camera.position.set(0,1.6,-102); document.getElementById('task').innerText="Дойди до конца коридора"; gloveExt=false; 
-        monster.position.set(0, 0, -80); // СПАВН СЗАДИ
+        monster.position.set(0, 0, -80);
         mActive=true; monster.visible=true; 
       },800); 
     }
@@ -276,19 +276,7 @@
       else if(room===2 && !keyTaken && Math.hypot(camera.position.x-3.5,camera.position.z+62)<2.5) { actBtn.innerText="🔑 ВЗЯТЬ КЛЮЧ"; actBtn.style.display='block'; }
       else if(room===2 && keyTaken && camera.position.z<-62) { actBtn.innerText="🚪 ВОЙТИ"; actBtn.style.display='block'; }
       else if(room===3 && !toyCreated && Math.hypot(camera.position.x,camera.position.z+75)<2.5) { actBtn.innerText="⚙ СОЗДАТЬ ИГРУШКУ"; actBtn.style.display='block'; }
-      else if(room===3 && toyCreated && !scanner3Active && Math.hypot(camera.position.x+2.5,camera.position.z+94.8)<2.5) {
-  scanner3Active = true;
-  document.getElementById('task').innerText = "Вы приложили карту к сканеру! Дверь открыта.";
-  setTimeout(() => {
-    door3.visible = false;
-    room = 4;
-    camera.position.set(0, 1.6, -102);
-    document.getElementById('task').innerText = "Дойди до конца коридора";
-    monster.position.set(0, 0, -80);
-    mActive = true;
-    monster.visible = true;
-  }, 1000);
-      }
+      else if(room===3 && toyCreated && !scanner3Active && Math.hypot(camera.position.x+2.5,camera.position.z+94.8)<2.5) { actBtn.innerText="🖐 АКТИВИРОВАТЬ"; actBtn.style.display='block'; }
       else if(room===4 && !hallDoorOpen && camera.position.z<-122) { actBtn.innerText="🔓 ОТКРЫТЬ ДВЕРЬ"; actBtn.style.display='block'; }
       else { actBtn.style.display='none'; }
     } else { actBtn.style.display='none'; }
